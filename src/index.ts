@@ -1,6 +1,7 @@
 
 // Main plugin
 import MicrosoftAuth from './plugin';
+import { ApiClientPlugin } from './plugin/apiClient';
 
 // Composables
 import { useMicrosoftAuth } from './composables/useMicrosoftAuth';
@@ -40,7 +41,7 @@ export {
 };
 
 // Plugin install function for manual installation
-export { MicrosoftAuth };
+export { MicrosoftAuth, ApiClientPlugin };
 
 // Version
 export const version = '1.0.0';

@@ -1,7 +1,5 @@
 
 export interface MicrosoftAuthOptions {
-  /** Base URL for the authentication API */
-  apiBaseUrl: string;
   /** Optional: Custom redirect URI after authentication */
   redirectUri?: string;
   /** Optional: Whether to automatically refresh tokens */

@@ -22,20 +22,25 @@ npm install vue-microsoft-auth
 
 ## Quick Start
 
-### 1. Install the Plugin
+### 1. Install the Plugins
 
-**Important: You must provide the `apiBaseUrl` during plugin installation. This is required and cannot be set later.**
+**Important: You must install both the API Client plugin and the Microsoft Auth plugin. The API Client plugin must be installed first.**
 
 ```typescript
 // main.ts
 import { createApp } from 'vue'
 import App from './App.vue'
-import MicrosoftAuth from 'vue-microsoft-auth'
+import MicrosoftAuth, { ApiClientPlugin } from 'vue-microsoft-auth'
 
 const app = createApp(App)
 
+// 1. First, install the API Client plugin with your base URL
+app.use(ApiClientPlugin, {
+  baseUrl: 'https://your-backend-api.com' // Required: Your authentication API base URL
+})
+
+// 2. Then install the Microsoft Auth plugin with optional settings
 app.use(MicrosoftAuth, {
-  apiBaseUrl: 'https://your-backend-api.com', // Required: Your authentication API base URL
   autoRefresh: true,
   debug: process.env.NODE_ENV === 'development'
 })
@@ -43,7 +48,7 @@ app.use(MicrosoftAuth, {
 app.mount('#app')
 ```
 
-**Note:** The `apiBaseUrl` must be provided during plugin initialization. The plugin will throw an error if this required option is missing.
+**Note:** The `ApiClientPlugin` must be installed before the `MicrosoftAuth` plugin, as it provides the API base URL configuration.
 
 ### 2. Use in Components
 
@@ -91,9 +96,16 @@ onMounted(() => {
 
 ## Configuration Options
 
+### API Client Plugin Options
+```typescript
+interface ApiClientOptions {
+  baseUrl: string;              // Required: Your backend API URL
+}
+```
+
+### Microsoft Auth Plugin Options
 ```typescript
 interface MicrosoftAuthOptions {
-  apiBaseUrl: string;           // Required: Your backend API URL
   redirectUri?: string;         // Optional: Custom redirect URI
   autoRefresh?: boolean;        // Optional: Auto-refresh tokens (default: true)
   refreshInterval?: number;     // Optional: Refresh interval in ms
@@ -104,27 +116,33 @@ interface MicrosoftAuthOptions {
 
 ### Required Configuration
 
-- **`apiBaseUrl`**: This is the only required option. It must be the base URL of your authentication backend API (e.g., `https://api.yourdomain.com`). The plugin will make requests to endpoints like `${apiBaseUrl}/auth/microsoft/token`.
+- **`baseUrl`** (ApiClientPlugin): This is the only required option. It must be the base URL of your authentication backend API (e.g., `https://api.yourdomain.com`). The plugin will make requests to endpoints like `${baseUrl}/auth/microsoft/token`.
 
 ### Configuration Examples
 
 ```typescript
 // Development
+app.use(ApiClientPlugin, {
+  baseUrl: 'http://localhost:3000' // Your local backend
+})
 app.use(MicrosoftAuth, {
-  apiBaseUrl: 'http://localhost:3000', // Your local backend
   debug: true
 })
 
 // Production
+app.use(ApiClientPlugin, {
+  baseUrl: 'https://api.yourdomain.com' // Your production API
+})
 app.use(MicrosoftAuth, {
-  apiBaseUrl: 'https://api.yourdomain.com', // Your production API
   autoRefresh: true,
   refreshInterval: 300000 // 5 minutes
 })
 
 // Using environment variables
+app.use(ApiClientPlugin, {
+  baseUrl: import.meta.env.VITE_API_BASE_URL // From .env file
+})
 app.use(MicrosoftAuth, {
-  apiBaseUrl: import.meta.env.VITE_API_BASE_URL, // From .env file
   debug: import.meta.env.DEV
 })
 ```
