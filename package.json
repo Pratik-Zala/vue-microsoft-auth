@@ -1,0 +1,49 @@
+{
+  "name": "vue-microsoft-auth",
+  "version": "1.0.0",
+  "description": "A Vue.js plugin for Microsoft authentication with OAuth2",
+  "main": "dist/vue-microsoft-auth.umd.js",
+  "module": "dist/vue-microsoft-auth.es.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build && tsc --emitDeclarationOnly",
+    "dev": "vite build --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "vue",
+    "vue3",
+    "microsoft",
+    "auth",
+    "oauth",
+    "authentication",
+    "login",
+    "signin"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "peerDependencies": {
+    "vue": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@vitejs/plugin-vue": "^4.0.0",
+    "typescript": "^5.0.0",
+    "vite": "^4.0.0",
+    "vue": "^3.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/vue-microsoft-auth.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/vue-microsoft-auth/issues"
+  },
+  "homepage": "https://github.com/yourusername/vue-microsoft-auth#readme",
+  "dependencies": {
+    "axios": "^1.11.0"
+  }
+}
