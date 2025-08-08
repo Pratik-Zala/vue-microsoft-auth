@@ -18,13 +18,3 @@ const MicrosoftAuth: MicrosoftAuthPlugin = {
 };
 
 export default MicrosoftAuth;
-export { useMicrosoftAuth };
-
-export type { 
-  MicrosoftAuthOptions, 
-  MicrosoftAuthUser, 
-  MicrosoftAuthComposable,
-  RegisterData,
-  BiometricOptions,
-  AuthComposable
-} from '../types';
