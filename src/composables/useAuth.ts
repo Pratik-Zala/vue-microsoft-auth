@@ -1,6 +1,6 @@
 
 import type { AuthComposable, RegisterData } from '../types';
-import apiClient from '../utils/apiClient';
+import { getApiClient } from '../utils/apiClient';
 
 const base64UrlToArrayBuffer = (base64Url: string): ArrayBuffer => {
   const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -24,6 +24,7 @@ const arrayBufferToBase64Url = (buffer: ArrayBuffer): string => {
 
 export function useAuth(): AuthComposable {
   const register = async (userData: RegisterData): Promise<void> => {
+    const apiClient = getApiClient();
     const response = await apiClient.post(`/register`, userData, {
       headers: {
         'Content-Type': 'application/json',
@@ -39,6 +40,7 @@ export function useAuth(): AuthComposable {
   };
 
   const sendOtp = async (email: string): Promise<void> => {
+    const apiClient = getApiClient();
     await apiClient.post(`/register/send-otp`, { email }, {
       headers: {
         'Content-Type': 'application/json',
@@ -47,6 +49,7 @@ export function useAuth(): AuthComposable {
   };
 
   const verifyRegistration = async (email: string, otp: string): Promise<void> => {
+    const apiClient = getApiClient();
     await apiClient.post(`/register/verify`, { email, otp }, {
       headers: {
         'Content-Type': 'application/json',
@@ -56,6 +59,7 @@ export function useAuth(): AuthComposable {
 
   const registerBiometrics = async (email: string): Promise<any> => {
     try {
+      const apiClient = getApiClient();
       // Get registration options from backend
       const optionsResponse = await apiClient.post(`/webauthn/register/options`, { email }, {
         headers: {
@@ -112,6 +116,7 @@ export function useAuth(): AuthComposable {
   };
 
   const verifyBiometrics = async (email: string): Promise<any> => {
+    const apiClient = getApiClient();
     try {
       // Get login options from backend
       const optionsResponse = await apiClient.post(`/webauthn/login/options`, { email }, {
