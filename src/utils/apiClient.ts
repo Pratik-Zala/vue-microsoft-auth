@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import type { AuthError } from '../types';
 
 class ApiClient {
@@ -108,11 +108,3 @@ export function getApiClient(): ApiClient {
   }
   return apiClientInstance;
 }
-
-// Export the getter as default for backward compatibility
-export default {
-  get: (...args: any[]) => getApiClient().get(...args),
-  post: (...args: any[]) => getApiClient().post(...args),
-  put: (...args: any[]) => getApiClient().put(...args),
-  delete: (...args: any[]) => getApiClient().delete(...args),
-};
