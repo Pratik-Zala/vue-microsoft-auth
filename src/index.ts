@@ -1,25 +1,46 @@
+
+// Main plugin
 import MicrosoftAuth from './plugin';
+
+// Composables
 import { useMicrosoftAuth } from './composables/useMicrosoftAuth';
 import { useAuth } from './composables/useAuth';
+
+// Components
 import MicrosoftSignInButton from './components/MicrosoftSignInButton.vue';
 import MicrosoftSignUpButton from './components/MicrosoftSignUpButton.vue';
 import BiometricSetupButton from './components/BiometricSetupButton.vue';
 import AuthContainer from './components/AuthContainer.vue';
 
+// Types
 export type { 
   MicrosoftAuthOptions, 
   MicrosoftAuthUser, 
   MicrosoftAuthComposable,
   RegisterData,
-  BiometricOptions
+  BiometricOptions,
+  AuthComposable
 } from './types';
 
+// Default export - the plugin
 export default MicrosoftAuth;
+
+// Named exports for composables
 export { 
   useMicrosoftAuth,
-  useAuth,
+  useAuth
+};
+
+// Named exports for components
+export { 
   MicrosoftSignInButton, 
   MicrosoftSignUpButton, 
   BiometricSetupButton,
   AuthContainer
-}; 
+};
+
+// Plugin install function for manual installation
+export { MicrosoftAuth };
+
+// Version
+export const version = '1.0.0';
