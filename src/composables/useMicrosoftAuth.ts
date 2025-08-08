@@ -1,6 +1,7 @@
-import axios from 'axios';
+
 import { computed, ref } from 'vue';
 import type { MicrosoftAuthComposable, MicrosoftAuthUser } from '../types';
+import { getApiClient } from '../utils/apiClient';
 import { getAuthApiBaseUrl } from './authConfig';
 
 let currentUser = ref<MicrosoftAuthUser | null>(null);
@@ -21,18 +22,12 @@ export function useMicrosoftAuth(): MicrosoftAuthComposable {
   };
 
   const signOut = async (): Promise<void> => {
-    const apiBaseUrl = getAuthApiBaseUrl();
-    
     try {
-      // Call backend logout endpoint
+      // Call backend logout endpoint using API client
       const token = getAccessToken();
       if (token) {
-        await axios.post(`${apiBaseUrl}/auth/logout`, {}, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
+        const apiClient = getApiClient();
+        await apiClient.post('/auth/logout');
       }
     } catch (error) {
       console.error('Error during logout:', error);
@@ -72,13 +67,9 @@ export function useMicrosoftAuth(): MicrosoftAuthComposable {
       const tokenData = JSON.parse(token);
       if (!tokenData.refreshToken) return null;
 
-      const apiBaseUrl = getAuthApiBaseUrl();
-      const response = await axios.post(`${apiBaseUrl}/auth/refresh`, {
+      const apiClient = getApiClient();
+      const response = await apiClient.post('/auth/refresh', {
         refreshToken: tokenData.refreshToken,
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-        }
       });
 
       const newTokenData = response.data;
@@ -111,13 +102,9 @@ export function useMicrosoftAuth(): MicrosoftAuthComposable {
     if (!code) return;
 
     try {
-      const apiBaseUrl = getAuthApiBaseUrl();
-      const response = await axios.post(`${apiBaseUrl}/auth/microsoft/token`, {
+      const apiClient = getApiClient();
+      const response = await apiClient.post('/auth/microsoft/token', {
         code
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-        }
       });
 
       const data = response.data;
@@ -178,4 +165,4 @@ export function useMicrosoftAuth(): MicrosoftAuthComposable {
     getAccessToken,
     refreshToken,
   };
-}   
+}
