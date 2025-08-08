@@ -55,8 +55,10 @@ export interface MicrosoftAuthComposable {
 }
 
 export interface AuthComposable {
+  login: (userData: RegisterData) => Promise<any>;
+  verifyLogin: (userData: VerifyLogin) => Promise<any>;
   /** Register a new user with email/password */
-  register: (userData: RegisterData) => Promise<void>;
+  register: (userData: RegisterData) => Promise<any>;
   /** Send OTP to email for verification */
   sendOtp: (email: string) => Promise<void>;
   /** Verify registration with OTP */
@@ -65,6 +67,18 @@ export interface AuthComposable {
   registerBiometrics: (email: string) => Promise<any>;
   /** Verify biometric authentication */
   verifyBiometrics: (email: string) => Promise<any>;
+}
+
+export interface VerifyLogin {
+  email: string;
+  otp: string;
+}
+
+export interface LoginData {
+  /** User's email address */
+  email: string;
+  /** User's password */
+  password: string;
 }
 
 export interface RegisterData {

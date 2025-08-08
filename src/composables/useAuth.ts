@@ -1,5 +1,5 @@
 
-import type { AuthComposable, RegisterData } from '../types';
+import type { AuthComposable, LoginData, RegisterData, VerifyLogin } from '../types';
 import { getApiClient } from '../utils/apiClient';
 
 const base64UrlToArrayBuffer = (base64Url: string): ArrayBuffer => {
@@ -23,7 +23,34 @@ const arrayBufferToBase64Url = (buffer: ArrayBuffer): string => {
 };
 
 export function useAuth(): AuthComposable {
-  const register = async (userData: RegisterData): Promise<void> => {
+  const login = async (userData: LoginData): Promise<any> => {
+    const apiClient = getApiClient();
+    const response = await apiClient.post(`/auth/login`, userData, {
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+    const data = response.data;
+    if (data.token) {
+      localStorage.setItem('microsoft_auth_token', JSON.stringify({
+        accessToken: data.token,
+        expiresAt: Date.now() + (data.expiresIn * 1000),
+      }));
+    }
+    return response;
+  };
+
+  const verifyLogin = async (userData: VerifyLogin): Promise<any> => {
+    const apiClient = getApiClient();
+    const response = await apiClient.post(`/auth/login/verify`, userData, {
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+    return response;
+  };
+
+  const register = async (userData: RegisterData): Promise<any> => {
     const apiClient = getApiClient();
     const response = await apiClient.post(`/register`, userData, {
       headers: {
@@ -37,6 +64,8 @@ export function useAuth(): AuthComposable {
         expiresAt: Date.now() + (data.expiresIn * 1000),
       }));
     }
+
+    return response;
   };
 
   const sendOtp = async (email: string): Promise<void> => {
@@ -179,6 +208,8 @@ export function useAuth(): AuthComposable {
   };
 
   return {
+    login,
+    verifyLogin,
     register, sendOtp, verifyRegistration, registerBiometrics, verifyBiometrics
   }
 
