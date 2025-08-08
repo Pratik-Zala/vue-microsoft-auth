@@ -24,6 +24,8 @@ npm install vue-microsoft-auth
 
 ### 1. Install the Plugin
 
+**Important: You must provide the `apiBaseUrl` during plugin installation. This is required and cannot be set later.**
+
 ```typescript
 // main.ts
 import { createApp } from 'vue'
@@ -33,13 +35,15 @@ import MicrosoftAuth from 'vue-microsoft-auth'
 const app = createApp(App)
 
 app.use(MicrosoftAuth, {
-  apiBaseUrl: 'https://your-backend-api.com',
+  apiBaseUrl: 'https://your-backend-api.com', // Required: Your authentication API base URL
   autoRefresh: true,
   debug: process.env.NODE_ENV === 'development'
 })
 
 app.mount('#app')
 ```
+
+**Note:** The `apiBaseUrl` must be provided during plugin initialization. The plugin will throw an error if this required option is missing.
 
 ### 2. Use in Components
 
@@ -96,6 +100,33 @@ interface MicrosoftAuthOptions {
   storagePrefix?: string;       // Optional: LocalStorage prefix
   debug?: boolean;             // Optional: Enable debug logging
 }
+```
+
+### Required Configuration
+
+- **`apiBaseUrl`**: This is the only required option. It must be the base URL of your authentication backend API (e.g., `https://api.yourdomain.com`). The plugin will make requests to endpoints like `${apiBaseUrl}/auth/microsoft/token`.
+
+### Configuration Examples
+
+```typescript
+// Development
+app.use(MicrosoftAuth, {
+  apiBaseUrl: 'http://localhost:3000', // Your local backend
+  debug: true
+})
+
+// Production
+app.use(MicrosoftAuth, {
+  apiBaseUrl: 'https://api.yourdomain.com', // Your production API
+  autoRefresh: true,
+  refreshInterval: 300000 // 5 minutes
+})
+
+// Using environment variables
+app.use(MicrosoftAuth, {
+  apiBaseUrl: import.meta.env.VITE_API_BASE_URL, // From .env file
+  debug: import.meta.env.DEV
+})
 ```
 
 ## Available Components
