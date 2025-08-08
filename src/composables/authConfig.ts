@@ -10,7 +10,7 @@ export function setGlobalAuthConfig(options: MicrosoftAuthOptions): void {
 
 export function getAuthApiBaseUrl(): string {
   // Try to get from Vue injection first
-  const injectedOptions = inject<MicrosoftAuthOptions>('microsoftAuthOptions', null);
+  const injectedOptions = inject<MicrosoftAuthOptions | null>('microsoftAuthOptions', null);
   
   if (injectedOptions?.apiBaseUrl) {
     return injectedOptions.apiBaseUrl;
@@ -30,7 +30,7 @@ export function getAuthApiBaseUrl(): string {
 }
 
 export function getAuthConfig(): MicrosoftAuthOptions {
-  const injectedOptions = inject<MicrosoftAuthOptions>('microsoftAuthOptions', null);
+  const injectedOptions = inject<MicrosoftAuthOptions | null>('microsoftAuthOptions', null);
   
   if (injectedOptions) {
     return injectedOptions;

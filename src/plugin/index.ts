@@ -2,8 +2,6 @@ import type { App } from 'vue';
 import type { MicrosoftAuthOptions, MicrosoftAuthPlugin } from '../types';
 import { useMicrosoftAuth } from '../composables/useMicrosoftAuth';
 
-const PLUGIN_KEY = 'microsoftAuth';
-
 const MicrosoftAuth: MicrosoftAuthPlugin = {
   install(app: App, options: MicrosoftAuthOptions) {
     // Validate required options
