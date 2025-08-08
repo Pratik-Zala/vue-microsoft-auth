@@ -52,7 +52,7 @@ export function useAuth(): AuthComposable {
 
   const register = async (userData: RegisterData): Promise<any> => {
     const apiClient = getApiClient();
-    const response = await apiClient.post(`/register`, userData, {
+    const response = await apiClient.post(`/auth/register`, userData, {
       headers: {
         'Content-Type': 'application/json',
       }
@@ -70,7 +70,7 @@ export function useAuth(): AuthComposable {
 
   const sendOtp = async (email: string): Promise<void> => {
     const apiClient = getApiClient();
-    await apiClient.post(`/register/send-otp`, { email }, {
+    await apiClient.post(`/auth/register/send-otp`, { email }, {
       headers: {
         'Content-Type': 'application/json',
       }
@@ -79,7 +79,7 @@ export function useAuth(): AuthComposable {
 
   const verifyRegistration = async (email: string, otp: string): Promise<void> => {
     const apiClient = getApiClient();
-    await apiClient.post(`/register/verify`, { email, otp }, {
+    await apiClient.post(`/auth/register/verify`, { email, otp }, {
       headers: {
         'Content-Type': 'application/json',
       }
@@ -90,7 +90,7 @@ export function useAuth(): AuthComposable {
     try {
       const apiClient = getApiClient();
       // Get registration options from backend
-      const optionsResponse = await apiClient.post(`/webauthn/register/options`, { email }, {
+      const optionsResponse = await apiClient.post(`/auth/webauthn/register/options`, { email }, {
         headers: {
           'Content-Type': 'application/json',
         }
@@ -122,7 +122,7 @@ export function useAuth(): AuthComposable {
         },
       };
       // Send to backend for verification
-      const response = await apiClient.post(`/webauthn/register/verify`, {
+      const response = await apiClient.post(`/auth/webauthn/register/verify`, {
         ...credentialForServer,
         challengeToken: options.challengeToken,
         email,
@@ -148,7 +148,7 @@ export function useAuth(): AuthComposable {
     const apiClient = getApiClient();
     try {
       // Get login options from backend
-      const optionsResponse = await apiClient.post(`/webauthn/login/options`, { email }, {
+      const optionsResponse = await apiClient.post(`/auth/webauthn/login/options`, { email }, {
         headers: {
           'Content-Type': 'application/json',
         }
@@ -184,7 +184,7 @@ export function useAuth(): AuthComposable {
         },
       };
       // Send to backend for verification
-      const response = await apiClient.post(`/webauthn/login/verify`, {
+      const response = await apiClient.post(`/auth/webauthn/login/verify`, {
         email,
         data: credentialForServer,
         challengeToken: options.challengeToken,

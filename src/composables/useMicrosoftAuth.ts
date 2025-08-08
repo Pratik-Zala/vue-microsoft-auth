@@ -2,7 +2,6 @@
 import { computed, ref } from 'vue';
 import type { MicrosoftAuthComposable, MicrosoftAuthUser } from '../types';
 import { getApiClient } from '../utils/apiClient';
-import { getAuthApiBaseUrl } from './authConfig';
 
 let currentUser = ref<MicrosoftAuthUser | null>(null);
 
@@ -10,14 +9,14 @@ export function useMicrosoftAuth(): MicrosoftAuthComposable {
   const isAuthenticated = computed(() => !!currentUser.value);
 
   const signIn = async (): Promise<void> => {
-    const apiBaseUrl = getAuthApiBaseUrl();
-    const url = `${apiBaseUrl}/auth/microsoft`;
+    const apiClient = getApiClient();
+    const url = `${apiClient.getBaseURL()}/auth/microsoft`;
     window.location.href = url;
   };
 
   const signUp = async (): Promise<void> => {
-    const apiBaseUrl = getAuthApiBaseUrl();
-    const url = `${apiBaseUrl}/auth/microsoft`;
+    const apiClient = getApiClient();
+    const url = `${apiClient.getBaseURL()}/auth/microsoft`;
     window.location.href = url;
   };
 
