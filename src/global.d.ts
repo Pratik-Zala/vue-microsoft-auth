@@ -7,11 +7,6 @@ declare module '@vue/runtime-core' {
   }
 }
 
-// Augment window for environment variables
-declare global {
-  interface Window {
-    VUE_APP_AUTH_API_URL?: string;
-  }
-}
+// Global augmentations for the plugin
 
 export {}

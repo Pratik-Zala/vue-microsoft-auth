@@ -21,12 +21,7 @@ export function getAuthApiBaseUrl(): string {
     return globalOptions.apiBaseUrl;
   }
   
-  // Environment variable fallback
-  if (typeof window !== 'undefined' && (window as any).VUE_APP_AUTH_API_URL) {
-    return (window as any).VUE_APP_AUTH_API_URL;
-  }
-  
-  throw new Error('[vue-microsoft-auth] No API base URL configured. Please provide it in plugin options.');
+  throw new Error('[vue-microsoft-auth] No API base URL configured. Please provide apiBaseUrl in plugin options during initialization.');
 }
 
 export function getAuthConfig(): MicrosoftAuthOptions {
