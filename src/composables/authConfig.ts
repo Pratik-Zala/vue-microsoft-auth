@@ -21,7 +21,7 @@ export function getAuthApiBaseUrl(): string {
     return globalOptions.apiBaseUrl;
   }
   
-  throw new Error('[vue-microsoft-auth] No API base URL configured. Please provide apiBaseUrl in plugin options during initialization.');
+  throw new Error('[vue-microsoft-auth] No API base URL configured. Please provide it in plugin options.');
 }
 
 export function getAuthConfig(): MicrosoftAuthOptions {
