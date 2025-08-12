@@ -1,0 +1,294 @@
+<template>
+  <div class="flex items-center justify-center min-h-screen bg-gray-100">
+    <div class="relative w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
+      <!-- Back Button -->
+      <button v-if="loginStep === 'choice' || loginStep === 'otp'"
+        @click="loginStep === 'choice' ? goBackToCredentials() : goBackToChoice()" type="button"
+        class="absolute top-6 left-6 text-gray-500 hover:text-gray-800">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+
+      <div v-if="loginStep === 'credentials'">
+        <h2 class="text-2xl font-bold text-center text-gray-900">Login</h2>
+        <form @submit.prevent="login" class="mt-8 space-y-6">
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+            <div class="mt-1">
+              <input type="email" id="email" v-model="email" required
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            </div>
+          </div>
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+            <div class="mt-1">
+              <input type="password" id="password" v-model="password" required
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            </div>
+          </div>
+          <div>
+            <button type="submit" :disabled="isLoading"
+              class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50">
+              {{ isLoading ? 'Signing in...' : 'Sign in' }}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div v-if="loginStep === 'choice'">
+        <h2 class="text-2xl font-bold text-center text-gray-900">Choose Verification Method</h2>
+        <p class="text-center text-sm text-gray-600 mt-2">How would you like to verify it's you?</p>
+        <div class="mt-6 space-y-4">
+          <button @click="selectVerificationMethod('email')"
+            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            Verify with Email OTP
+          </button>
+          <button @click="selectVerificationMethod('biometric')"
+            class="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+            Verify with Biometrics
+          </button>
+        </div>
+      </div>
+
+      <div v-if="loginStep === 'otp'">
+        <h2 class="text-2xl font-bold text-center text-gray-900">Enter OTP</h2>
+        <p class="text-center text-sm text-gray-600 mt-2">
+          An OTP has been sent to {{ email }}.
+        </p>
+        <form @submit.prevent="verifyOtpLogin" class="mt-8 space-y-6">
+          <div>
+            <label for="otp" class="block text-sm font-medium text-gray-700">One-Time Password</label>
+            <div class="mt-1">
+              <input type="text" id="otp" v-model="otp" required
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            </div>
+          </div>
+          <div class="space-y-4">
+            <button type="submit" :disabled="isLoading"
+              class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50">
+              {{ isLoading ? 'Verifying...' : 'Verify' }}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div v-if="loginStep === 'credentials'">
+        <div class="relative my-4">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-gray-300"></div>
+          </div>
+          <div class="relative flex justify-center text-sm">
+            <span class="px-2 bg-white text-gray-500">Or continue with</span>
+          </div>
+        </div>
+
+        <div>
+          <button @click="signInWithMicrosoft"
+            class="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+            <img class="h-5 w-5 mr-2"
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Microsoft_logo.svg/240px-Microsoft_logo.svg.png"
+              alt="Microsoft logo" />
+            Sign in with Microsoft
+          </button>
+        </div>
+      </div>
+      <p v-if="error" class="text-sm text-center text-red-500">{{ error }}</p>
+      <p class="text-sm text-center">
+        Don't have an account?
+        <router-link to="/register" class="font-medium text-indigo-600 hover:text-indigo-500">
+          Register
+        </router-link>
+      </p>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import apiClient from '../services/api';
+import { setUserId, setUserAttributes, trackEvent } from '../services/clarity';
+import { notificationService } from '../services/notification.service';
+
+const email = ref('');
+const password = ref('');
+const router = useRouter();
+const isLoading = ref(false);
+const error = ref('');
+const loginStep = ref('credentials'); // credentials, choice, otp
+const otp = ref('');
+
+const goBackToCredentials = () => {
+  loginStep.value = 'credentials';
+  error.value = '';
+};
+
+const goBackToChoice = () => {
+  loginStep.value = 'choice';
+  error.value = '';
+};
+
+// WebAuthn helpers
+const base64UrlToArrayBuffer = (base64url) => {
+  const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
+  const binStr = atob(base64);
+  const len = binStr.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binStr.charCodeAt(i);
+  }
+  return bytes.buffer;
+};
+
+const arrayBufferToBase64Url = (buffer) => {
+  const bytes = new Uint8Array(buffer);
+  let binStr = '';
+  bytes.forEach((byte) => {
+    binStr += String.fromCharCode(byte);
+  });
+  const base64 = btoa(binStr);
+  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+};
+
+const signInWithMicrosoft = () => {
+  const url = `${import.meta.env.VITE_API_BASE_URL || '/api'}/auth/microsoft`;
+  window.location.href = url;
+};
+
+const login = async () => {
+  isLoading.value = true;
+  error.value = '';
+  try {
+    const response = await apiClient.post('/auth/login', {
+      email: email.value,
+      password: password.value,
+    });
+
+    if (response.data && response.data.success) {
+      loginStep.value = 'choice';
+    } else {
+      error.value = 'Invalid login credentials.';
+    }
+  } catch (err) {
+    error.value = err.response?.data?.message || 'Invalid login credentials.';
+    console.error(err);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const selectVerificationMethod = async (method) => {
+  try {
+    error.value = '';
+    if (method === 'email') {
+      isLoading.value = true;
+      await apiClient.post('/auth/login/send-otp', { email: email.value });
+      loginStep.value = 'otp';
+    } else if (method === 'biometric') {
+      isLoading.value = true;
+      error.value = '';
+
+      const optionsResponse = await apiClient.post('/auth/webauthn/login/options', { email: email.value });
+      const options = optionsResponse.data;
+
+      options.challenge = base64UrlToArrayBuffer(options.challenge);
+      if (options.allowCredentials) {
+        for (const cred of options.allowCredentials) {
+          cred.id = base64UrlToArrayBuffer(cred.id);
+        }
+      }
+
+      const credential = await navigator.credentials.get({ publicKey: options });
+
+      const credentialForServer = {
+        id: credential.id,
+        rawId: arrayBufferToBase64Url(credential.rawId),
+        type: credential.type,
+        response: {
+          authenticatorData: arrayBufferToBase64Url(credential.response.authenticatorData),
+          clientDataJSON: arrayBufferToBase64Url(credential.response.clientDataJSON),
+          signature: arrayBufferToBase64Url(credential.response.signature),
+          userHandle: credential.response.userHandle ? arrayBufferToBase64Url(credential.response.userHandle) : null,
+        },
+      };
+
+      const response = await apiClient.post('/auth/webauthn/login/verify', {
+        email: email.value,
+        data: credentialForServer,
+        challengeToken: options.challengeToken
+      });
+
+      if (response.data && response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        await notificationService.initialize();
+
+        if (notificationService.fcmToken) {
+          response.data.user.fcmToken = notificationService.fcmToken;
+        }
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        
+        // Track user in Microsoft Clarity
+        setUserId(response.data.user.id || response.data.user.email);
+        setUserAttributes({
+          email: response.data.user.email,
+          name: response.data.user.name || response.data.user.displayName,
+          loginMethod: 'biometric'
+        });
+        trackEvent('user_login', { method: 'biometric' });
+        
+        router.push('/');
+      } else {
+        error.value = 'Verification failed.';
+      }
+    }
+  } catch (err) {
+    const message = err.response?.data?.message || err.message || 'Verification failed.';
+    error.value = message;
+    console.error(err);
+    if (err.name === 'NotAllowedError') {
+      loginStep.value = 'choice';
+    }
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const verifyOtpLogin = async () => {
+  isLoading.value = true;
+  error.value = '';
+  try {
+    const response = await apiClient.post('/auth/login/verify', {
+      email: email.value,
+      otp: otp.value,
+    });
+
+    if (response.data && response.data.token) {
+      localStorage.setItem('token', response.data.token);
+      await notificationService.initialize();
+      if (notificationService.fcmToken) {
+        response.data.user.fcmToken = notificationService.fcmToken;
+      }
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      
+      // Track user in Microsoft Clarity
+      setUserId(response.data.user.id || response.data.user.email);
+      setUserAttributes({
+        email: response.data.user.email,
+        name: response.data.user.name || response.data.user.displayName,
+        loginMethod: 'otp'
+      });
+      trackEvent('user_login', { method: 'otp' });
+      
+      router.push('/');
+    } else {
+      error.value = 'Login failed: No token received from server.';
+    }
+  } catch (err) {
+    error.value = err.response?.data?.message || 'Invalid OTP.';
+    console.error(err);
+  } finally {
+    isLoading.value = false;
+  }
+}
+</script>
