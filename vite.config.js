@@ -7,8 +7,8 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
-      name: 'VueMicrosoftAuth',
-      fileName: (format) => `vue-microsoft-auth.${format}.js`
+      name: 'VueTwymX',
+      fileName: (format) => `@twymai/vue-twymx.${format}.js`
     },
     rollupOptions: {
       external: ['vue'],

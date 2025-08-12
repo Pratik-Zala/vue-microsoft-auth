@@ -55,7 +55,7 @@ export interface MicrosoftAuthComposable {
 }
 
 export interface AuthComposable {
-  login: (userData: RegisterData) => Promise<any>;
+  login: (userData: LoginData) => Promise<any>;
   verifyLogin: (userData: VerifyLogin) => Promise<any>;
   /** Register a new user with email/password */
   register: (userData: RegisterData) => Promise<any>;
