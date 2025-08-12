@@ -1,4 +1,3 @@
-
 # Vue Microsoft Auth Plugin
 
 A comprehensive Vue.js 3 plugin for Microsoft authentication with OAuth2, including biometric authentication support and additional auth utilities.
@@ -77,7 +76,7 @@ app.mount('#app')
       <MicrosoftSignInButton @success="handleSignInSuccess" />
       <MicrosoftSignUpButton @success="handleSignUpSuccess" />
     </div>
-    
+
     <div v-else>
       <p>Welcome, {{ user?.displayName }}!</p>
       <button @click="signOut">Sign Out</button>
@@ -211,6 +210,88 @@ this.$router.push({ name: 'Login' })
 this.$router.push({ name: 'Register' })
 ```
 
+### MicrosoftAuthCallback
+
+Component for handling Microsoft OAuth callback after authentication:
+
+```vue
+<template>
+  <MicrosoftAuthCallback 
+    :redirect-path="'/dashboard'"
+    :on-success="handleAuthSuccess"
+    :on-error="handleAuthError"
+    @success="onCallbackSuccess"
+    @error="onCallbackError"
+  />
+</template>
+
+<script setup>
+import { MicrosoftAuthCallback } from 'vue-microsoft-auth'
+
+const handleAuthSuccess = (data) => {
+  console.log('Authentication successful:', data)
+}
+
+const handleAuthError = (error) => {
+  console.error('Authentication error:', error)
+}
+
+const onCallbackSuccess = (data) => {
+  console.log('Callback success:', data)
+}
+
+const onCallbackError = (error) => {
+  console.error('Callback error:', error)
+}
+</script>
+```
+
+### ModularRegisterComponent
+
+A complete modular registration component:
+
+```vue
+<template>
+  <ModularRegisterComponent 
+    :show-login-link="true"
+    :api-base-url="apiBaseUrl"
+    :on-success="handleSuccess"
+    :on-error="handleError"
+    @success="onAuthSuccess"
+    @error="onAuthError"
+    @login="showLoginForm"
+  />
+</template>
+
+<script setup>
+import { ModularRegisterComponent } from 'vue-microsoft-auth'
+
+const apiBaseUrl = 'https://your-backend-api.com'
+
+const handleSuccess = (data) => {
+  // Handle successful registration
+  console.log('Registration successful:', data)
+}
+
+const handleError = (error) => {
+  // Handle registration error
+  console.error('Registration error:', error)
+}
+
+const onAuthSuccess = (user) => {
+  console.log('User authenticated:', user)
+}
+
+const onAuthError = (error) => {
+  console.error('Auth error:', error)
+}
+
+const showLoginForm = () => {
+  // Handle login action
+}
+</script>
+```
+
 ## Available Components
 
 ### CompleteAuthComponent
@@ -305,7 +386,7 @@ const onAuthError = (error) => {
   console.error('Auth error:', error)
 }
 
-const showRegisterForm = () => {
+const showLoginForm = () => {
   // Handle register action
 }
 </script>
@@ -384,7 +465,7 @@ Container component that handles different auth states.
   <template #authenticated="{ user }">
     <p>Welcome {{ user.displayName }}!</p>
   </template>
-  
+
   <template #unauthenticated>
     <MicrosoftSignInButton />
   </template>

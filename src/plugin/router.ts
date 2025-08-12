@@ -3,13 +3,16 @@ import type { App } from 'vue';
 import type { Router } from 'vue-router';
 import ModularLoginComponent from '../components/ModularLoginComponent.vue';
 import ModularRegisterComponent from '../components/ModularRegisterComponent.vue';
+import MicrosoftAuthCallback from '../components/MicrosoftAuthCallback.vue';
 
 export interface RouterPluginOptions {
   router: Router;
   loginPath?: string;
   registerPath?: string;
+  callbackPath?: string;
   loginName?: string;
   registerName?: string;
+  callbackName?: string;
 }
 
 export const RouterPlugin = {
@@ -23,14 +26,17 @@ export const RouterPlugin = {
       router,
       loginPath = '/login',
       registerPath = '/register',
+      callbackPath = '/auth/microsoft/callback',
       loginName = 'Login',
-      registerName = 'Register'
+      registerName = 'Register',
+      callbackName = 'MicrosoftAuthCallback'
     } = options;
 
     // Check if routes already exist to avoid conflicts
     const existingRoutes = router.getRoutes();
     const loginExists = existingRoutes.some(route => route.path === loginPath);
     const registerExists = existingRoutes.some(route => route.path === registerPath);
+    const callbackExists = existingRoutes.some(route => route.path === callbackPath);
 
     if (!loginExists) {
       router.addRoute({
@@ -49,6 +55,18 @@ export const RouterPlugin = {
         path: registerPath,
         name: registerName,
         component: ModularRegisterComponent,
+        meta: {
+          requiresAuth: false,
+          addedByTwymx: true
+        }
+      });
+    }
+
+    if (!callbackExists) {
+      router.addRoute({
+        path: callbackPath,
+        name: callbackName,
+        component: MicrosoftAuthCallback,
         meta: {
           requiresAuth: false,
           addedByTwymx: true
