@@ -29,8 +29,16 @@ npm install vue-microsoft-auth
 ```typescript
 // main.ts
 import { createApp } from 'vue'
+import { createRouter, createWebHistory } from 'vue-router'
 import App from './App.vue'
-import MicrosoftAuth, { ApiClientPlugin } from 'vue-microsoft-auth'
+import MicrosoftAuth, { ApiClientPlugin, RouterPlugin } from 'vue-microsoft-auth'
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    // Your existing routes
+  ]
+})
 
 const app = createApp(App)
 
@@ -45,6 +53,16 @@ app.use(MicrosoftAuth, {
   debug: process.env.NODE_ENV === 'development'
 })
 
+// 3. Optional: Install the Router plugin for automatic route registration
+app.use(RouterPlugin, {
+  router: router, // Required: Your Vue Router instance
+  loginPath: '/login', // Optional: Custom login route path (default: '/login')
+  registerPath: '/register', // Optional: Custom register route path (default: '/register')
+  loginName: 'Login', // Optional: Custom login route name (default: 'Login')
+  registerName: 'Register' // Optional: Custom register route name (default: 'Register')
+})
+
+app.use(router)
 app.mount('#app')
 ```
 
@@ -114,6 +132,17 @@ interface MicrosoftAuthOptions {
 }
 ```
 
+### Router Plugin Options
+```typescript
+interface RouterPluginOptions {
+  router: Router;               // Required: Vue Router instance
+  loginPath?: string;          // Optional: Custom login route path (default: '/login')
+  registerPath?: string;       // Optional: Custom register route path (default: '/register')
+  loginName?: string;          // Optional: Custom login route name (default: 'Login')
+  registerName?: string;       // Optional: Custom register route name (default: 'Register')
+}
+```
+
 ### Required Configuration
 
 - **`baseUrl`** (ApiClientPlugin): This is the only required option. It must be the base URL of your authentication backend API (e.g., `https://api.yourdomain.com`). The plugin will make requests to endpoints like `${baseUrl}/auth/microsoft/token`.
@@ -145,6 +174,41 @@ app.use(ApiClientPlugin, {
 app.use(MicrosoftAuth, {
   debug: import.meta.env.DEV
 })
+```
+
+## Automatic Route Registration
+
+The RouterPlugin automatically registers `/login` and `/register` routes in your Vue Router when installed. This eliminates the need to manually define these routes in your application.
+
+### Features
+- Automatically adds `/login` and `/register` routes
+- Uses the built-in `ModularLoginComponent` and `ModularRegisterComponent`
+- Customizable route paths and names
+- Checks for existing routes to avoid conflicts
+- Adds metadata to identify auto-registered routes
+
+### Usage
+```typescript
+import { RouterPlugin } from 'vue-microsoft-auth'
+
+app.use(RouterPlugin, {
+  router: router,
+  loginPath: '/auth/login',    // Custom login path
+  registerPath: '/auth/signup', // Custom register path
+  loginName: 'AuthLogin',      // Custom route name
+  registerName: 'AuthSignup'   // Custom route name
+})
+```
+
+After installation, you can navigate to these routes using:
+```typescript
+// In your components
+this.$router.push('/login')
+this.$router.push('/register')
+
+// Or with route names
+this.$router.push({ name: 'Login' })
+this.$router.push({ name: 'Register' })
 ```
 
 ## Available Components

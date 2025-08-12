@@ -37,6 +37,14 @@ export interface MicrosoftAuthPlugin {
   install: (app: any, options: MicrosoftAuthOptions) => void;
 }
 
+export interface RouterPluginOptions {
+  router: any; // Vue Router instance
+  loginPath?: string;
+  registerPath?: string;
+  loginName?: string;
+  registerName?: string;
+}
+
 export interface MicrosoftAuthComposable {
   /** Sign in with Microsoft OAuth */
   signIn: () => Promise<void>;
@@ -55,7 +63,7 @@ export interface MicrosoftAuthComposable {
 }
 
 export interface AuthComposable {
-  login: (userData: RegisterData) => Promise<any>;
+  login: (userData: LoginData) => Promise<any>;
   verifyLogin: (userData: VerifyLogin) => Promise<any>;
   /** Register a new user with email/password */
   register: (userData: RegisterData) => Promise<any>;
