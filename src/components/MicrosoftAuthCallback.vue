@@ -1,4 +1,3 @@
-
 <template>
   <div class="flex items-center justify-center min-h-screen bg-gray-100">
     <div class="relative p-8 max-w-md w-full space-y-4 bg-white rounded-lg shadow-md text-center">
@@ -127,28 +126,6 @@ const goBack = () => {
   else if (authStep.value === 'biometricRegistration') authStep.value = 'biometricChoice';
   else if (authStep.value === 'email') authStep.value = 'biometricChoice';
   else if (authStep.value === 'otp') authStep.value = 'email';
-};
-
-// WebAuthn helpers
-const base64UrlToArrayBuffer = (base64url: string): ArrayBuffer => {
-  const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
-  const binStr = atob(base64);
-  const len = binStr.length;
-  const bytes = new Uint8Array(len);
-  for (let i = 0; i < len; i++) {
-    bytes[i] = binStr.charCodeAt(i);
-  }
-  return bytes.buffer;
-};
-
-const arrayBufferToBase64Url = (buffer: ArrayBuffer): string => {
-  const bytes = new Uint8Array(buffer);
-  let binStr = '';
-  bytes.forEach((byte) => {
-    binStr += String.fromCharCode(byte);
-  });
-  const base64 = btoa(binStr);
-  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 };
 
 onMounted(async () => {
