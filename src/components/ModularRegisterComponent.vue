@@ -27,17 +27,16 @@
       <!-- Biometric Setup Step -->
       <BiometricSetupButton
         v-if="registrationStep === 'biometric'"
-        :is-loading="isLoading"
-        @setup-biometrics="enableBiometrics"
+        :email="email"
       />
 
       <!-- Error Message -->
       <p v-if="error" class="text-sm text-center text-red-500">{{ error }}</p>
 
       <!-- Login Link -->
-      <p v-if="registrationStep !== 'biometric' && showLoginLink" class="text-sm text-center">
+      <p v-if="registrationStep !== 'biometric'" class="text-sm text-center">
         Already have an account?
-        <a href="#" @click="$emit('login')" class="font-medium text-indigo-600 hover:text-indigo-500">
+        <a href="/login" @click="$emit('login')" class="font-medium text-indigo-600 hover:text-indigo-500">
           Login
         </a>
       </p>
@@ -50,20 +49,15 @@ import { ref } from 'vue';
 import { useAuth } from '../composables/useAuth';
 import { useMicrosoftAuth } from '../composables/useMicrosoftAuth';
 import BackButton from './BackButton.vue';
-import RegistrationForm from './RegistrationForm.vue';
-import OtpVerification from './OtpVerification.vue';
 import BiometricSetupButton from './BiometricSetupButton.vue';
+import OtpVerification from './OtpVerification.vue';
+import RegistrationForm from './RegistrationForm.vue';
 
 interface Props {
-  showLoginLink?: boolean;
-  apiBaseUrl?: string;
-  autoRedirect?: boolean;
   redirectPath?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  showLoginLink: true,
-  apiBaseUrl: '/api',
   autoRedirect: true,
   redirectPath: '/'
 });
@@ -160,7 +154,7 @@ const enableBiometrics = async () => {
     const response = await registerBiometrics(email.value);
 
     if (response.data && response.data.success) {
-      if (props.autoRedirect && typeof window !== 'undefined') {
+      if (typeof window !== 'undefined') {
         setTimeout(() => {
           window.location.href = props.redirectPath;
         }, 1500);

@@ -7,11 +7,11 @@
 
 <script setup lang="ts">
 import { ref, defineProps } from 'vue';
-import { useMicrosoftAuth } from '../composables/useMicrosoftAuth';
+import { useAuth } from '../composables/useAuth';
 
 const props = defineProps<{ email: string, label?: string }>();
 const emit = defineEmits(['success', 'error']);
-const { registerBiometrics } = useMicrosoftAuth();
+const { registerBiometrics } = useAuth();
 const isLoading = ref(false);
 
 const handleRegisterBiometrics = async () => {

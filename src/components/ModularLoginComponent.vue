@@ -38,7 +38,7 @@
       <p class="text-sm text-center">
         Don't have an account?
         <a 
-          href="#" 
+          href="/register" 
           @click="$emit('register')" 
           class="font-medium text-indigo-600 hover:text-indigo-500"
         >
