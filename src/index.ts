@@ -14,8 +14,10 @@ import BiometricSetupButton from './components/BiometricSetupButton.vue';
 import AuthContainer from './components/AuthContainer.vue';
 import CompleteAuthComponent from './components/CompleteAuthComponent.vue';
 import ModularLoginComponent from './components/ModularLoginComponent.vue';
+import ModularRegisterComponent from './components/ModularRegisterComponent.vue';
 import BackButton from './components/BackButton.vue';
 import CredentialsForm from './components/CredentialsForm.vue';
+import RegistrationForm from './components/RegistrationForm.vue';
 import VerificationChoice from './components/VerificationChoice.vue';
 import OtpVerification from './components/OtpVerification.vue';
 
@@ -46,8 +48,10 @@ export {
   AuthContainer,
   CompleteAuthComponent,
   ModularLoginComponent,
+  ModularRegisterComponent,
   BackButton,
   CredentialsForm,
+  RegistrationForm,
   VerificationChoice,
   OtpVerification
 };
