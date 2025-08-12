@@ -34,7 +34,8 @@
     "@vitejs/plugin-vue": "^4.0.0",
     "typescript": "^5.0.0",
     "vite": "^4.5.14",
-    "vue": "^3.3.0"
+    "vue": "^3.3.0",
+    "vue-router": "^4.5.1"
   },
   "repository": {
     "type": "git",

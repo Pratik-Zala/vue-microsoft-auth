@@ -34,9 +34,9 @@ export const RouterPlugin = {
 
     // Check if routes already exist to avoid conflicts
     const existingRoutes = router.getRoutes();
-    const loginExists = existingRoutes.some(route => route.path === loginPath);
-    const registerExists = existingRoutes.some(route => route.path === registerPath);
-    const callbackExists = existingRoutes.some(route => route.path === callbackPath);
+    const loginExists = existingRoutes.some((route: any) => route.path === loginPath);
+    const registerExists = existingRoutes.some((route: any) => route.path === registerPath);
+    const callbackExists = existingRoutes.some((route: any) => route.path === callbackPath);
 
     if (!loginExists) {
       router.addRoute({
