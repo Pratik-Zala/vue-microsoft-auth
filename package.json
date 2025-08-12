@@ -1,9 +1,9 @@
 {
-  "name": "vue-microsoft-auth",
+  "name": "@twymai/vue-twymx",
   "version": "1.0.0",
   "description": "A Vue.js plugin for Microsoft authentication with OAuth2",
-  "main": "dist/vue-microsoft-auth.umd.js",
-  "module": "dist/vue-microsoft-auth.es.js",
+  "main": "dist/vue-twymx.umd.js",
+  "module": "dist/vue-twymx.es.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
@@ -37,13 +37,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/vue-microsoft-auth.git"
+    "url": "git+https://github.comc"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/vue-microsoft-auth/issues"
+    "url": "https://github.com/twymai/vue-twymx/issues"
   },
-  "homepage": "https://github.com/yourusername/vue-microsoft-auth#readme",
+  "homepage": "https://github.com/twymai/vue-twymx#readme",
   "dependencies": {
     "axios": "^1.11.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   }
 }
