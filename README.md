@@ -199,7 +199,85 @@ const showRegisterForm = () => {
 - OTP verification via email
 - Multi-step authentication flow
 - Built-in loading states and error handling
-- Responsive design with Tailwind CSS classes
+- Responsive design
+
+### ModularLoginComponent
+
+A complete modular authentication component that provides the same functionality as CompleteAuthComponent but with a different UI design:
+
+```vue
+<template>
+  <ModularLoginComponent 
+    :show-register-link="true"
+    :api-base-url="apiBaseUrl"
+    :on-success="handleSuccess"
+    :on-error="handleError"
+    @success="onAuthSuccess"
+    @error="onAuthError"
+    @register="showRegisterForm"
+  />
+</template>
+
+<script setup>
+import { ModularLoginComponent } from 'vue-microsoft-auth'
+
+const apiBaseUrl = 'https://your-backend-api.com'
+
+const handleSuccess = (data) => {
+  // Handle successful authentication
+  console.log('Login successful:', data)
+}
+
+const handleError = (error) => {
+  // Handle authentication error
+  console.error('Login error:', error)
+}
+
+const onAuthSuccess = (user) => {
+  console.log('User authenticated:', user)
+}
+
+const onAuthError = (error) => {
+  console.error('Auth error:', error)
+}
+
+const showRegisterForm = () => {
+  // Handle register action
+}
+</script>
+```
+
+## Individual Components
+
+You can also use the individual components separately for more customization:
+
+### BackButton
+```vue
+<BackButton @back="handleBack" />
+```
+
+### CredentialsForm
+```vue
+<CredentialsForm 
+  :is-loading="isLoading"
+  @submit="handleCredentialsSubmit"
+  @microsoft-signin="signInWithMicrosoft"
+/>
+```
+
+### VerificationChoice
+```vue
+<VerificationChoice @select-method="selectVerificationMethod" />
+```
+
+### OtpVerification
+```vue
+<OtpVerification 
+  :email="userEmail"
+  :is-loading="isLoading"
+  @verify="verifyOtpLogin"
+/>
+``` with Tailwind CSS classes
 
 ### MicrosoftSignInButton
 Pre-built sign-in button with Microsoft branding.

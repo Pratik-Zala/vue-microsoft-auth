@@ -13,6 +13,11 @@ import MicrosoftSignUpButton from './components/MicrosoftSignUpButton.vue';
 import BiometricSetupButton from './components/BiometricSetupButton.vue';
 import AuthContainer from './components/AuthContainer.vue';
 import CompleteAuthComponent from './components/CompleteAuthComponent.vue';
+import ModularLoginComponent from './components/ModularLoginComponent.vue';
+import BackButton from './components/BackButton.vue';
+import CredentialsForm from './components/CredentialsForm.vue';
+import VerificationChoice from './components/VerificationChoice.vue';
+import OtpVerification from './components/OtpVerification.vue';
 
 // Types
 export type { 
@@ -39,7 +44,12 @@ export {
   MicrosoftSignUpButton, 
   BiometricSetupButton,
   AuthContainer,
-  CompleteAuthComponent
+  CompleteAuthComponent,
+  ModularLoginComponent,
+  BackButton,
+  CredentialsForm,
+  VerificationChoice,
+  OtpVerification
 };
 
 // Plugin install function for manual installation
