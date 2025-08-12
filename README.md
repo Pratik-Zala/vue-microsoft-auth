@@ -149,6 +149,58 @@ app.use(MicrosoftAuth, {
 
 ## Available Components
 
+### CompleteAuthComponent
+
+A comprehensive authentication component that includes all authentication flows in one component:
+
+```vue
+<template>
+  <CompleteAuthComponent 
+    :show-register-link="true"
+    :auto-redirect="true"
+    redirect-path="/dashboard"
+    @success="onAuthSuccess"
+    @error="onAuthError"
+    @register="showRegisterForm"
+  />
+</template>
+
+<script setup>
+import { CompleteAuthComponent } from 'vue-microsoft-auth'
+
+const onAuthSuccess = (user) => {
+  console.log('User authenticated:', user)
+}
+
+const onAuthError = (error) => {
+  console.error('Auth error:', error)
+}
+
+const showRegisterForm = () => {
+  // Handle register action
+}
+</script>
+```
+
+**Props:**
+- `showRegisterLink` (boolean, default: `true`): Show register link at bottom
+- `autoRedirect` (boolean, default: `true`): Automatically redirect after successful auth
+- `redirectPath` (string, default: `'/'`): Path to redirect to after successful auth
+
+**Events:**
+- `@success`: Emitted when authentication is successful (receives user object)
+- `@error`: Emitted when an error occurs (receives error message)
+- `@register`: Emitted when register link is clicked
+
+**Features:**
+- Email/password authentication
+- Microsoft OAuth integration
+- Biometric authentication support
+- OTP verification via email
+- Multi-step authentication flow
+- Built-in loading states and error handling
+- Responsive design with Tailwind CSS classes
+
 ### MicrosoftSignInButton
 Pre-built sign-in button with Microsoft branding.
 

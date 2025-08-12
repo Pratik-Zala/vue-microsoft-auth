@@ -12,6 +12,7 @@ import MicrosoftSignInButton from './components/MicrosoftSignInButton.vue';
 import MicrosoftSignUpButton from './components/MicrosoftSignUpButton.vue';
 import BiometricSetupButton from './components/BiometricSetupButton.vue';
 import AuthContainer from './components/AuthContainer.vue';
+import CompleteAuthComponent from './components/CompleteAuthComponent.vue';
 
 // Types
 export type { 
@@ -37,7 +38,8 @@ export {
   MicrosoftSignInButton, 
   MicrosoftSignUpButton, 
   BiometricSetupButton,
-  AuthContainer
+  AuthContainer,
+  CompleteAuthComponent
 };
 
 // Plugin install function for manual installation
