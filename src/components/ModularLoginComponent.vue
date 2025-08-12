@@ -35,7 +35,7 @@
       <p v-if="error" class="text-sm text-center text-red-500">{{ error }}</p>
 
       <!-- Register Link -->
-      <p class="text-sm text-center">
+      <p v-if="showRegisterLink" class="text-sm text-center">
         Don't have an account?
         <a 
           href="#" 
@@ -59,11 +59,16 @@ import OtpVerification from './OtpVerification.vue';
 import VerificationChoice from './VerificationChoice.vue';
 
 interface Props {
+  showRegisterLink?: boolean;
+  apiBaseUrl?: string;
   onSuccess?: (data: any) => void;
   onError?: (error: string) => void;
 }
 
-const props = withDefaults(defineProps<Props>(), {});
+const props = withDefaults(defineProps<Props>(), {
+  showRegisterLink: true,
+  apiBaseUrl: '/api'
+});
 
 const emit = defineEmits<{
   register: [];
@@ -97,10 +102,7 @@ const handleCredentialsSubmit = async (credentials: { email: string; password: s
   password.value = credentials.password;
 
   try {
-    const response = await login({
-      email:credentials.email,
-      password: credentials.password
-    });
+    const response = await login(credentials.email, credentials.password);
 
     if (response.data && response.data.success) {
       loginStep.value = 'choice';

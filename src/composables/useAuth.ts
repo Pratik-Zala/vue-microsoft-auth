@@ -203,6 +203,8 @@ export function useAuth(): AuthComposable {
     }
   };
 
+  const sendOtpForRegistration = sendOtp;
+
   return {
     register,
     sendOtp,
