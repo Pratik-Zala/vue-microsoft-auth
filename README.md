@@ -19,6 +19,10 @@ A comprehensive Vue.js 3 plugin for Microsoft authentication with OAuth2, includ
 npm install vue-microsoft-auth
 ```
 
+**Requirements:**
+- Vue 3.0+
+- Vue Router 4.0+ (required for authentication components with routing)
+
 ## Quick Start
 
 ### 1. Install the Plugins
