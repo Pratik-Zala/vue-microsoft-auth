@@ -16,7 +16,7 @@ A comprehensive Vue.js 3 plugin for Microsoft authentication with OAuth2, includ
 ## Installation
 
 ```bash
-npm install vue-microsoft-auth
+npm install @twymai/vue-twymx
 ```
 
 **Requirements:**
@@ -34,7 +34,7 @@ npm install vue-microsoft-auth
 import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import App from './App.vue'
-import MicrosoftAuth, { ApiClientPlugin, RouterPlugin } from 'vue-microsoft-auth'
+import MicrosoftAuth, { ApiClientPlugin, RouterPlugin } from '@twymai/vue-twymx'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -94,7 +94,7 @@ import {
   useMicrosoftAuth, 
   MicrosoftSignInButton, 
   MicrosoftSignUpButton 
-} from 'vue-microsoft-auth'
+} from '@twymai/vue-twymx'
 
 const { signOut, getUser, isAuthenticated } = useMicrosoftAuth()
 const user = ref(getUser())
@@ -192,7 +192,7 @@ The RouterPlugin automatically registers `/login` and `/register` routes in your
 
 ### Usage
 ```typescript
-import { RouterPlugin } from 'vue-microsoft-auth'
+import { RouterPlugin } from '@twymai/vue-twymx'
 
 app.use(RouterPlugin, {
   router: router,
@@ -230,7 +230,7 @@ Component for handling Microsoft OAuth callback after authentication:
 </template>
 
 <script setup>
-import { MicrosoftAuthCallback } from 'vue-microsoft-auth'
+import { MicrosoftAuthCallback } from '@twymai/vue-twymx'
 
 const handleAuthSuccess = (data) => {
   console.log('Authentication successful:', data)
@@ -268,7 +268,7 @@ A complete modular registration component:
 </template>
 
 <script setup>
-import { ModularRegisterComponent } from 'vue-microsoft-auth'
+import { ModularRegisterComponent } from '@twymai/vue-twymx'
 
 const apiBaseUrl = 'https://your-backend-api.com'
 
@@ -315,7 +315,7 @@ A comprehensive authentication component that includes all authentication flows 
 </template>
 
 <script setup>
-import { CompleteAuthComponent } from 'vue-microsoft-auth'
+import { CompleteAuthComponent } from '@twymai/vue-twymx'
 
 const onAuthSuccess = (user) => {
   console.log('User authenticated:', user)
@@ -368,7 +368,7 @@ A complete modular authentication component that provides the same functionality
 </template>
 
 <script setup>
-import { ModularLoginComponent } from 'vue-microsoft-auth'
+import { ModularLoginComponent } from '@twymai/vue-twymx'
 
 const apiBaseUrl = 'https://your-backend-api.com'
 
@@ -518,7 +518,7 @@ import type {
   MicrosoftAuthOptions,
   RegisterData,
   BiometricOptions 
-} from 'vue-microsoft-auth'
+} from '@twymai/vue-twymx'
 ```
 
 ## Backend Integration
@@ -536,7 +536,7 @@ Your backend should provide these endpoints:
 The plugin provides structured error handling:
 
 ```typescript
-import type { AuthError } from 'vue-microsoft-auth'
+import type { AuthError } from '@twymai/vue-twymx'
 
 try {
   await signIn()
