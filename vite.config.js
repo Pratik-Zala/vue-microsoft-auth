@@ -18,8 +18,16 @@ export default defineConfig({
           vue: 'Vue',
           'vue-router': 'VueRouter',
           axios: 'axios'
+        },
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name?.endsWith('.vue')) {
+            return 'components/[name].[ext]'
+          }
+          return '[name].[ext]'
         }
       }
-    }
+    },
+    copyPublicDir: false,
+    sourcemap: false
   }
 })
