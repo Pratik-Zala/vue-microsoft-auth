@@ -4,22 +4,12 @@ import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
 
 export default defineConfig({
-  plugins: [
-    vue({
-      isProduction: true,
-      template: {
-        compilerOptions: {
-          isCustomElement: (tag) => tag.includes('-')
-        }
-      }
-    })
-  ],
+  plugins: [vue()],
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'VueTwymx',
-      fileName: (format) => `@twymai/vue-twymx.${format}.js`,
-      formats: ['es', 'umd']
+      fileName: (format) => `@twymai/vue-twymx.${format}.js`
     },
     rollupOptions: {
       external: ['vue', 'vue-router', 'axios'],
@@ -29,16 +19,15 @@ export default defineConfig({
           'vue-router': 'VueRouter',
           axios: 'axios'
         },
-        exports: 'named'
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name?.endsWith('.vue')) {
+            return 'components/[name].[ext]'
+          }
+          return '[name].[ext]'
+        }
       }
     },
     copyPublicDir: false,
-    sourcemap: false,
-    minify: false
-  },
-  resolve: {
-    alias: {
-      '@': resolve(__dirname, 'src')
-    }
+    sourcemap: false
   }
 })

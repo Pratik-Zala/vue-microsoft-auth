@@ -9,8 +9,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "vite build && npm run build:types",
-    "build:types": "vue-tsc --project tsconfig.build.json",
+    "build": "vite build && tsc --emitDeclarationOnly && npm run copy-components",
+    "copy-components": "mkdir -p dist/components && cp -r src/components/*.vue dist/components/",
     "dev": "vite build --watch",
     "prepublishOnly": "npm run build"
   },
@@ -36,8 +36,7 @@
     "typescript": "^5.0.0",
     "vite": "^4.5.14",
     "vue": "^3.3.0",
-    "vue-router": "^4.5.1",
-    "vue-tsc": "^3.0.5"
+    "vue-router": "^4.5.1"
   },
   "repository": {
     "type": "git",
@@ -49,7 +48,7 @@
   "homepage": "https://github.com/twymai/vue-twymx#readme",
   "dependencies": {
     "axios": "^1.11.0",
-    "vue-router": "^4.0.0"
+    "vue-router": "^4.5.1"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
