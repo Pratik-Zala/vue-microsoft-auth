@@ -9,8 +9,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "vite build && tsc --emitDeclarationOnly && npm run copy-components",
-    "copy-components": "mkdir -p dist/components && cp -r src/components/*.vue dist/components/",
+    "build": "vite build && tsc --emitDeclarationOnly",
     "dev": "vite build --watch",
     "prepublishOnly": "npm run build"
   },
