@@ -33,12 +33,11 @@ export type {
   AuthComposable
 } from './types';
 
-// Default export - the plugin
-export default MicrosoftAuth;
 
 // Named exports for composables
 export { 
   useMicrosoftAuth,
+  MicrosoftAuth,
   useAuth
 };
 
@@ -60,7 +59,7 @@ export {
 };
 
 // Plugin install function for manual installation
-export { MicrosoftAuth, ApiClientPlugin, RouterPlugin };
+export { ApiClientPlugin, RouterPlugin };
 
 // Version
 export const version = '1.0.0';
