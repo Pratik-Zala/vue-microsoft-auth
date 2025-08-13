@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "build": "vite build && npm run build:types",
-    "build:types": "vue-tsc --declaration --emitDeclarationOnly --outDir dist",
+    "build:types": "vue-tsc --project tsconfig.build.json",
     "dev": "vite build --watch",
     "prepublishOnly": "npm run build"
   },
