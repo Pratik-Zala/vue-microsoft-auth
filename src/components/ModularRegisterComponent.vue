@@ -76,7 +76,7 @@ const name = ref('');
 const password = ref('');
 const otp = ref('');
 
-const { register, sendOtp, verifyRegistration, registerBiometrics } = useAuth();
+const { register,  sendRegisterOtp, verifyRegistration, registerBiometrics } = useAuth();
 const { signUp } = useMicrosoftAuth();
 
 const goBackToDetails = () => {
@@ -103,7 +103,7 @@ const handleRegister = async (formData: { name: string; email: string; password:
   password.value = formData.password;
 
   try {
-    await sendOtp(email.value);
+    await sendRegisterOtp(email.value);
     registrationStep.value = 'otp';
   } catch (err: any) {
     error.value = err.response?.data?.message || 'Failed to send OTP.';
@@ -146,35 +146,35 @@ const handleVerificationRegistration = async (otpValue: string) => {
   }
 };
 
-const enableBiometrics = async () => {
-  isLoading.value = true;
-  error.value = '';
+// const enableBiometrics = async () => {
+//   isLoading.value = true;
+//   error.value = '';
 
-  try {
-    const response = await registerBiometrics(email.value);
+//   try {
+//     const response = await registerBiometrics(email.value);
 
-    if (response.data && response.data.success) {
-      if (typeof window !== 'undefined') {
-        setTimeout(() => {
-          window.location.href = props.redirectPath;
-        }, 1500);
-      }
-      emit('success', { message: 'Registration completed successfully!' });
-    } else {
-      error.value = 'Biometric registration failed.';
-      emit('error', error.value);
-    }
-  } catch (err: any) {
-    const message = err.response?.data?.message || err.message || 'Biometric registration failed.';
-    error.value = message;
-    emit('error', error.value);
-    console.error(err);
+//     if (response.data && response.data.success) {
+//       if (typeof window !== 'undefined') {
+//         setTimeout(() => {
+//           window.location.href = props.redirectPath;
+//         }, 1500);
+//       }
+//       emit('success', { message: 'Registration completed successfully!' });
+//     } else {
+//       error.value = 'Biometric registration failed.';
+//       emit('error', error.value);
+//     }
+//   } catch (err: any) {
+//     const message = err.response?.data?.message || err.message || 'Biometric registration failed.';
+//     error.value = message;
+//     emit('error', error.value);
+//     console.error(err);
 
-    if (err.name === 'NotAllowedError') {
-      error.value = 'Biometric registration was cancelled. It is required to proceed.';
-    }
-  } finally {
-    isLoading.value = false;
-  }
-};
+//     if (err.name === 'NotAllowedError') {
+//       error.value = 'Biometric registration was cancelled. It is required to proceed.';
+//     }
+//   } finally {
+//     isLoading.value = false;
+//   }
+// };
 </script>

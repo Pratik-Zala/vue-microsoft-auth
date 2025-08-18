@@ -68,7 +68,15 @@ export function useAuth(): AuthComposable {
     return response;
   };
 
-  const sendOtp = async (email: string): Promise<void> => {
+  const sendRegisterOtp = async (email: string): Promise<void> => {
+    await apiClient.post(`/auth/register/send-otp`, { email }, {
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+  };
+
+  const sendLoginOtp = async (email: string): Promise<void> => {
     await apiClient.post(`/auth/register/send-otp`, { email }, {
       headers: {
         'Content-Type': 'application/json',
@@ -205,7 +213,8 @@ export function useAuth(): AuthComposable {
 
   return {
     register,
-    sendOtp,
+    sendRegisterOtp,
+    sendLoginOtp,
     verifyRegistration,
     registerBiometrics,
     login,

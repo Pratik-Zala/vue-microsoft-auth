@@ -78,7 +78,7 @@ const email = ref('');
 const password = ref('');
 const credentialsForm = ref(null);
 
-const { login, sendOtp, verifyBiometrics, verifyLogin } = useAuth();
+const { login, sendLoginOtp, verifyBiometrics, verifyLogin } = useAuth();
 const { signIn: microsoftSignIn } = useMicrosoftAuth();
 
 const handleBackAction = () => {
@@ -130,7 +130,7 @@ const selectVerificationMethod = async (method: 'email' | 'biometric') => {
     error.value = '';
     if (method === 'email') {
       isLoading.value = true;
-      await sendOtp(email.value);
+      await sendLoginOtp(email.value);
       loginStep.value = 'otp';
     } else if (method === 'biometric') {
       isLoading.value = true;

@@ -68,7 +68,8 @@ export interface AuthComposable {
   /** Register a new user with email/password */
   register: (userData: RegisterData) => Promise<any>;
   /** Send OTP to email for verification */
-  sendOtp: (email: string) => Promise<void>;
+  sendLoginOtp: (email: string) => Promise<void>;
+  sendRegisterOtp: (email: string) => Promise<void>;
   /** Verify registration with OTP */
   verifyRegistration: (email: string, otp: string) => Promise<any>;
   /** Register biometric authentication */
