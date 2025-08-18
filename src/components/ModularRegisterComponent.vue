@@ -76,7 +76,7 @@ const name = ref('');
 const password = ref('');
 const otp = ref('');
 
-const { register,  sendRegisterOtp, verifyRegistration, registerBiometrics } = useAuth();
+const { register,  sendRegisterOtp, verifyRegistration } = useAuth();
 const { signUp } = useMicrosoftAuth();
 
 const goBackToDetails = () => {
