@@ -118,7 +118,7 @@ const isLoading = ref(false);
 const userEmail = ref('');
 const otp = ref('');
 
-const { sendOtp, verifyLogin, registerBiometrics: authRegisterBiometrics, verifyBiometrics } = useAuth();
+const { sendLoginOtp, verifyLogin, registerBiometrics: authRegisterBiometrics, verifyBiometrics } = useAuth();
 
 const goBack = () => {
   if (authStep.value === 'microsoft') router.push('/login');
@@ -271,7 +271,7 @@ const handleSendMail = async () => {
   try {
     error.value = '';
     isLoading.value = true;
-    await sendOtp(userEmail.value);
+    await sendLoginOtp(userEmail.value);
     authStep.value = 'otp';
   } catch (err: any) {
     const message = err.response?.data?.message || err.message || 'Verification failed.';

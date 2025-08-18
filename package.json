@@ -9,7 +9,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "vite build && tsc --emitDeclarationOnly && npm run copy-components",
+    "typecheck": "tsc --noEmit",
+    "build": "npm run typecheck && vite build && tsc --emitDeclarationOnly && npm run copy-components",
     "copy-components": "mkdir -p dist/components && cp -r src/components/*.vue dist/components/",
     "dev": "vite build --watch",
     "prepublishOnly": "npm run build"
