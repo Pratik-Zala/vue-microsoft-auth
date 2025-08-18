@@ -181,6 +181,7 @@ const verifyWithBiometrics = async () => {
         props.onSuccess(response.data);
       }
       
+      console.log("after verify with biometrics redirecting",props.redirectPath)
       router.push(props.redirectPath);
     } else {
       error.value = 'Verification failed.';
@@ -216,6 +217,7 @@ const verifyOtpLogin = async () => {
         props.onSuccess(response.data);
       }
       
+      console.log("after verify with otp redirecting",props.redirectPath)
       router.push(props.redirectPath);
     } else {
       error.value = 'Login failed: No token received from server.';

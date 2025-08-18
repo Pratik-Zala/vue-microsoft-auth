@@ -1,34 +1,20 @@
-
 <template>
   <div class="flex items-center justify-center min-h-screen bg-gray-100">
     <div class="relative w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
       <!-- Back Button -->
-      <BackButton
-        v-if="registrationStep === 'otp'"
-        @back="goBackToDetails"
-      />
+      <BackButton v-if="registrationStep === 'otp'" @back="goBackToDetails" />
 
       <!-- Registration Form Step -->
-      <RegistrationForm
-        v-if="registrationStep === 'details'"
-        :is-loading="isLoading"
-        @submit="handleRegister"
-        @microsoft-signup="signUpWithMicrosoft"
-      />
+      <RegistrationForm v-if="registrationStep === 'details'" :is-loading="isLoading" @submit="handleRegister"
+        @microsoft-signup="signUpWithMicrosoft" />
 
       <!-- OTP Verification Step -->
-      <OtpVerification
-        v-if="registrationStep === 'otp'"
-        :email="email"
-        :is-loading="isLoading"
-        @verify="handleVerificationRegistration"
-      />
+      <OtpVerification v-if="registrationStep === 'otp'" :email="email" :is-loading="isLoading"
+        @verify="handleVerificationRegistration" />
 
       <!-- Biometric Setup Step -->
-      <BiometricSetupButton
-        v-if="registrationStep === 'biometric'"
-        :email="email"
-      />
+      <BiometricSetupButton v-if="registrationStep === 'biometric'" :email="email" @success="handleBiometricSuccess"
+        @error="handleBiometricError" />
 
       <!-- Error Message -->
       <p v-if="error" class="text-sm text-center text-red-500">{{ error }}</p>
@@ -46,6 +32,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { useAuth } from '../composables/useAuth';
 import { useMicrosoftAuth } from '../composables/useMicrosoftAuth';
 import BackButton from './BackButton.vue';
@@ -54,8 +41,12 @@ import OtpVerification from './OtpVerification.vue';
 import RegistrationForm from './RegistrationForm.vue';
 
 interface Props {
+  onSuccess?: (data: any) => void;
+  onError?: (error: string) => void;
   redirectPath?: string;
 }
+
+const router = useRouter();
 
 const props = withDefaults(defineProps<Props>(), {
   autoRedirect: true,
@@ -76,13 +67,28 @@ const name = ref('');
 const password = ref('');
 const otp = ref('');
 
-const { register,  sendRegisterOtp, verifyRegistration } = useAuth();
+const { register, sendRegisterOtp, verifyRegistration } = useAuth();
 const { signUp } = useMicrosoftAuth();
 
 const goBackToDetails = () => {
   registrationStep.value = 'details';
   error.value = '';
 };
+
+const handleBiometricSuccess = async (data: any) => {
+  emit('success', data);
+  if (props.onSuccess) {
+    props.onSuccess(data);
+  }
+  router.push(props.redirectPath);
+}
+
+const handleBiometricError = async (error: any) => {
+  console.error("Error in biometric", error)
+  if (props.onError) {
+    props.onError(error)
+  }
+}
 
 const signUpWithMicrosoft = async () => {
   try {
