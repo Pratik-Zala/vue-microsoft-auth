@@ -41,8 +41,7 @@ import OtpVerification from './OtpVerification.vue';
 import RegistrationForm from './RegistrationForm.vue';
 
 interface Props {
-  onSuccess?: (data: any) => void;
-  onError?: (error: string) => void;
+  autoRedirect: boolean,
   redirectPath?: string;
 }
 
@@ -76,18 +75,21 @@ const goBackToDetails = () => {
 };
 
 const handleBiometricSuccess = async (data: any) => {
+  console.log("dataaaaaaaa", data)
+  localStorage.setItem('token', data.token);
+  localStorage.setItem('user', JSON.stringify(data.user));
+
   emit('success', data);
-  if (props.onSuccess) {
-    props.onSuccess(data);
+
+  if(props.autoRedirect) {  
+    router.push(props.redirectPath);
   }
-  router.push(props.redirectPath);
+
 }
 
 const handleBiometricError = async (error: any) => {
   console.error("Error in biometric", error)
-  if (props.onError) {
-    props.onError(error)
-  }
+  emit('error', error)
 }
 
 const signUpWithMicrosoft = async () => {
@@ -113,7 +115,6 @@ const handleRegister = async (formData: { name: string; email: string; password:
     registrationStep.value = 'otp';
   } catch (err: any) {
     error.value = err.response?.data?.message || 'Failed to send OTP.';
-    emit('error', error.value);
     console.error(err);
   } finally {
     isLoading.value = false;
@@ -135,52 +136,15 @@ const handleVerificationRegistration = async (otpValue: string) => {
     });
 
     if (response.data && response.data.token) {
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
       registrationStep.value = 'biometric';
-      emit('success', response.data.user);
     } else {
       error.value = 'Registration failed: No token received from server.';
-      emit('error', error.value);
     }
   } catch (err: any) {
     error.value = err.response?.data?.message || 'An error occurred during verification.';
-    emit('error', error.value);
     console.error(err);
   } finally {
     isLoading.value = false;
   }
 };
-
-// const enableBiometrics = async () => {
-//   isLoading.value = true;
-//   error.value = '';
-
-//   try {
-//     const response = await registerBiometrics(email.value);
-
-//     if (response.data && response.data.success) {
-//       if (typeof window !== 'undefined') {
-//         setTimeout(() => {
-//           window.location.href = props.redirectPath;
-//         }, 1500);
-//       }
-//       emit('success', { message: 'Registration completed successfully!' });
-//     } else {
-//       error.value = 'Biometric registration failed.';
-//       emit('error', error.value);
-//     }
-//   } catch (err: any) {
-//     const message = err.response?.data?.message || err.message || 'Biometric registration failed.';
-//     error.value = message;
-//     emit('error', error.value);
-//     console.error(err);
-
-//     if (err.name === 'NotAllowedError') {
-//       error.value = 'Biometric registration was cancelled. It is required to proceed.';
-//     }
-//   } finally {
-//     isLoading.value = false;
-//   }
-// };
 </script>

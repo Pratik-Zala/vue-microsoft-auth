@@ -51,6 +51,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { useAuth } from '../composables/useAuth';
 import { useMicrosoftAuth } from '../composables/useMicrosoftAuth';
 import BackButton from './BackButton.vue';
@@ -59,11 +60,14 @@ import OtpVerification from './OtpVerification.vue';
 import VerificationChoice from './VerificationChoice.vue';
 
 interface Props {
-  onSuccess?: (data: any) => void;
-  onError?: (error: string) => void;
+  autoRedirect: boolean,
+  redirectPath?: string;
 }
 
-const props = withDefaults(defineProps<Props>(), {});
+const props = withDefaults(defineProps<Props>(), {
+  autoRedirect: true,
+  redirectPath: '/'
+});
 
 const emit = defineEmits<{
   register: [];
@@ -73,6 +77,7 @@ const emit = defineEmits<{
 
 const isLoading = ref(false);
 const error = ref('');
+const router = useRouter()
 const loginStep = ref<'credentials' | 'choice' | 'otp'>('credentials');
 const email = ref('');
 const password = ref('');
@@ -104,7 +109,7 @@ const handleCredentialsSubmit = async (credentials: { email: string; password: s
 
     if (response.data && response.data.success) {
       loginStep.value = 'choice';
-    } else {
+    } else {  
       error.value = 'Invalid login credentials.';
       emit('error', error.value);
     }
@@ -141,11 +146,13 @@ const selectVerificationMethod = async (method: 'email' | 'biometric') => {
       if (response.data && response.data.token) {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
-        
+
         emit('success', response.data);
-        if (props.onSuccess) {
-          props.onSuccess(response.data);
+
+        if(props.autoRedirect) {  
+          router.push(props.redirectPath);
         }
+
       } else {
         error.value = 'Verification failed.';
         emit('error', error.value);
@@ -155,9 +162,6 @@ const selectVerificationMethod = async (method: 'email' | 'biometric') => {
     const message = err.response?.data?.message || err.message || 'Verification failed.';
     error.value = message;
     emit('error', error.value);
-    if (props.onError) {
-      props.onError(message);
-    }
     if (err.name === 'NotAllowedError') {
       loginStep.value = 'choice';
     }
@@ -180,9 +184,6 @@ const verifyOtpLogin = async (otp: string) => {
       localStorage.setItem('user', JSON.stringify(response.data.user));
       
       emit('success', response.data);
-      if (props.onSuccess) {
-        props.onSuccess(response.data);
-      }
     } else {
       error.value = 'Login failed: No token received from server.';
       emit('error', error.value);
@@ -190,9 +191,6 @@ const verifyOtpLogin = async (otp: string) => {
   } catch (err: any) {
     error.value = err.response?.data?.message || 'Invalid OTP.';
     emit('error', error.value);
-    if (props.onError) {
-      props.onError(error.value);
-    }
   } finally {
     isLoading.value = false;
   }

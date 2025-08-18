@@ -96,12 +96,12 @@ import { getApiClient } from '../utils/apiClient';
 import { useAuth } from '../composables/useAuth';
 
 interface Props {
-  onSuccess?: (data: any) => void;
-  onError?: (error: string) => void;
+  autoRedirect: boolean,
   redirectPath?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  autoRedirect: true,
   redirectPath: '/'
 });
 
@@ -177,12 +177,10 @@ const verifyWithBiometrics = async () => {
       localStorage.setItem('user', JSON.stringify(response.data.user));
       
       emit('success', response.data);
-      if (props.onSuccess) {
-        props.onSuccess(response.data);
-      }
       
-      console.log("after verify with biometrics redirecting",props.redirectPath)
-      router.push(props.redirectPath);
+      if(props.autoRedirect) {  
+        router.push(props.redirectPath);
+      }
     } else {
       error.value = 'Verification failed.';
       emit('error', error.value);
@@ -209,16 +207,16 @@ const verifyOtpLogin = async () => {
     });
 
     if (response.data && response.data.token) {
+
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
       
       emit('success', response.data);
-      if (props.onSuccess) {
-        props.onSuccess(response.data);
-      }
-      
+
       console.log("after verify with otp redirecting",props.redirectPath)
-      router.push(props.redirectPath);
+      if(props.autoRedirect) {  
+        router.push(props.redirectPath);
+      }
     } else {
       error.value = 'Login failed: No token received from server.';
       emit('error', error.value);
@@ -239,12 +237,12 @@ const registerBiometrics = async () => {
     const response = await authRegisterBiometrics(userEmail.value);
 
     if (response.data && response.data.success) {
+
       emit('success', { message: 'Biometric registration completed successfully!' });
-      if (props.onSuccess) {
-        props.onSuccess(response.data);
-      }
       
-      router.push(props.redirectPath);
+      if(props.autoRedirect) {  
+        router.push(props.redirectPath);
+      }
     } else {
       error.value = 'Biometric registration failed.';
       emit('error', error.value);

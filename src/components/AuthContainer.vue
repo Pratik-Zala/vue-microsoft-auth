@@ -187,8 +187,8 @@
 
 <script setup lang="ts">
 import { ref, defineProps, defineEmits } from 'vue';
-import { useMicrosoftAuth } from '../composables/useMicrosoftAuth';
 import axios from 'axios';
+import { useAuth } from '../composables/useAuth';
 
 const props = defineProps<{
   authFlow: 'login' | 'register';
@@ -211,11 +211,12 @@ const registrationStep = ref(props.initialStep || 'details');
 
 const { 
   register, 
-  sendOtp, 
+  sendRegisterOtp,
+  sendLoginOtp, 
   verifyRegistration, 
   registerBiometrics, 
   verifyBiometrics 
-} = useMicrosoftAuth();
+} = useAuth();
 
 const handleLogin = async () => {
   isLoading.value = true;
@@ -248,7 +249,7 @@ const selectVerificationMethod = async (method: 'email' | 'biometric') => {
     error.value = '';
     if (method === 'email') {
       isLoading.value = true;
-      await sendOtp(email.value);
+      await sendLoginOtp(email.value);
       loginStep.value = 'otp';
       emit('step-change', 'otp');
     } else if (method === 'biometric') {
@@ -300,7 +301,7 @@ const handleRegister = async () => {
   isLoading.value = true;
   error.value = '';
   try {
-    await sendOtp(email.value);
+    await sendRegisterOtp(email.value);
     registrationStep.value = 'otp';
     emit('step-change', 'otp');
   } catch (err: any) {

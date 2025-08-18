@@ -136,10 +136,6 @@ export function useAuth(): AuthComposable {
           'Content-Type': 'application/json',
         }
       });
-      const data = response.data;
-      if (!data.success) {
-        throw new Error('Biometric registration failed');
-      }
       return response;
     } catch (error: any) {
       if (error instanceof Error && error.name === 'NotAllowedError') {
