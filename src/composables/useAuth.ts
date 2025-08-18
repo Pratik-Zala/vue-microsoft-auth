@@ -77,7 +77,7 @@ export function useAuth(): AuthComposable {
   };
 
   const sendLoginOtp = async (email: string): Promise<void> => {
-    await apiClient.post(`/auth/register/send-otp`, { email }, {
+    await apiClient.post(`/auth/login/send-otp`, { email }, {
       headers: {
         'Content-Type': 'application/json',
       }
