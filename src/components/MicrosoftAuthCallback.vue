@@ -130,7 +130,7 @@ const { sendLoginOtp, verifyLogin, registerBiometrics: authRegisterBiometrics, v
 const goBack = () => {
   if (authStep.value === 'microsoft') router.push('/login');
   else if (authStep.value === 'biometricChoice') router.push('/login');
-  else if (authStep.value === 'biometricRegistration') authStep.value = 'biometricChoice';
+  else if (authStep.value === 'biometricRegistration') router.push('/login');
   else if (authStep.value === 'email-register') authStep.value = 'biometricRegistration';
   else if (authStep.value === 'email') authStep.value = 'biometricChoice';
   else if (authStep.value === 'otp') authStep.value = 'email';
@@ -172,6 +172,11 @@ onMounted(async () => {
       }
     }
     else {
+      const user = localStorage.getItem('user');
+      if (user) {
+        const userData = JSON.parse(user);
+        userEmail.value = userData.email;
+      }
       authStep.value = 'biometricRegistration';
     }
   } catch (err: any) {

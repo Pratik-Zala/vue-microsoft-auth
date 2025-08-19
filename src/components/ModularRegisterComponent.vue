@@ -1,5 +1,6 @@
 <template>
-  <div class="flex items-center justify-center min-h-screen bg-gray-100">
+  <div v-if="registrationStep !== 'biometric'"
+  class="flex items-center justify-center min-h-screen bg-gray-100">
     <div class="relative w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
       <!-- Back Button -->
       <BackButton v-if="registrationStep === 'otp'" @back="goBackToDetails" />
@@ -12,19 +13,12 @@
       <OtpVerification v-if="registrationStep === 'otp'" :email="email" :is-loading="isLoading"
         @verify="handleVerificationRegistration" />
 
-      <!-- Biometric Setup Step -->
-      <MicrosoftAuthCallback
-      v-if="registrationStep === 'biometric'"
-        :auto-redirect="true"
-        @success="handleBiometricSuccess"
-        @error="handleBiometricError"
-      />
 
       <!-- Error Message -->
       <p v-if="error" class="text-sm text-center text-red-500">{{ error }}</p>
 
+      <p class="text-sm text-center">
       <!-- Login Link -->
-      <p v-if="registrationStep !== 'biometric'" class="text-sm text-center">
         Already have an account?
         <a href="/login" @click="$emit('login')" class="font-medium text-indigo-600 hover:text-indigo-500">
           Login
@@ -32,6 +26,14 @@
       </p>
     </div>
   </div>
+        <!-- Biometric Setup Step -->
+        <MicrosoftAuthCallback
+      v-if="registrationStep === 'biometric'"
+        :auto-redirect="true"
+        @success="handleBiometricSuccess"
+        @error="handleBiometricError"
+      />
+
 </template>
 
 <script setup lang="ts">
