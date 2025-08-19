@@ -13,8 +13,12 @@
         @verify="handleVerificationRegistration" />
 
       <!-- Biometric Setup Step -->
-      <BiometricSetupButton v-if="registrationStep === 'biometric'" :email="email" @success="handleBiometricSuccess"
-        @error="handleBiometricError" />
+      <MicrosoftAuthCallback
+      v-if="registrationStep === 'biometric'"
+        :auto-redirect="true"
+        @success="handleBiometricSuccess"
+        @error="handleBiometricError"
+      />
 
       <!-- Error Message -->
       <p v-if="error" class="text-sm text-center text-red-500">{{ error }}</p>
@@ -36,7 +40,7 @@ import { useRouter } from 'vue-router';
 import { useAuth } from '../composables/useAuth';
 import { useMicrosoftAuth } from '../composables/useMicrosoftAuth';
 import BackButton from './BackButton.vue';
-import BiometricSetupButton from './BiometricSetupButton.vue';
+import MicrosoftAuthCallback from './MicrosoftAuthCallback.vue';
 import OtpVerification from './OtpVerification.vue';
 import RegistrationForm from './RegistrationForm.vue';
 
@@ -134,6 +138,9 @@ const handleVerificationRegistration = async (otpValue: string) => {
     });
 
     if (response.data && response.data.token) {
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+
       registrationStep.value = 'biometric';
     } else {
       error.value = 'Registration failed: No token received from server.';

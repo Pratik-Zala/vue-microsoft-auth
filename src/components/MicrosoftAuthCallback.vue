@@ -1,8 +1,7 @@
 <template>
   <div class="flex items-center justify-center min-h-screen bg-gray-100">
     <div class="relative p-8 max-w-md w-full space-y-4 bg-white rounded-lg shadow-md text-center">
-      <button @click="goBack" type="button"
-        class="absolute top-6 left-6 text-gray-500 hover:text-gray-800">
+      <button @click="goBack" type="button" class="absolute top-6 left-6 text-gray-500 hover:text-gray-800">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
@@ -13,27 +12,29 @@
         <div v-if="!error" class="flex justify-center mt-4">
           <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
         </div>
-      </div>  
-      
+      </div>
+
       <div v-if="authStep === 'biometricChoice'">
         <h2 class="text-xl font-bold text-gray-900">Biometric Verification</h2>
         <p class="mt-2 text-gray-600">Please verify your identity to complete the login.</p>
         <div class="mt-6">
-          <button @click="verifyWithBiometrics" :disabled="isLoading" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50">
+          <button @click="verifyWithBiometrics" :disabled="isLoading"
+            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50">
             {{ isLoading ? 'Verifying...' : 'Verify with Biometrics' }}
           </button>
         </div>
         <div class="mt-6">
-          <button @click="authStep='email'" :disabled="isLoading" class="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+          <button @click="authStep = 'email'" :disabled="isLoading"
+            class="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
             Continue with OTP
           </button>
         </div>
       </div>
 
-      <div v-if="authStep === 'email' || authStep ==='email-register'">
+      <div v-if="authStep === 'email' || authStep === 'email-register'">
         <h2 class="text-2xl font-bold text-center text-gray-900">Enter Email Address</h2>
         <form @submit.prevent="handleSendMail" class="mt-8 space-y-6">
-           <div>
+          <div>
             <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
             <div class="mt-1">
               <input type="email" id="email" v-model="userEmail" required
@@ -83,7 +84,8 @@
           </button>
         </div>
         <div class="mt-6">
-          <button @click="authStep='email-register'" :disabled="isLoading" class="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+          <button @click="authStep = 'email-register'" :disabled="isLoading"
+            class="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
             Continue with OTP
           </button>
         </div>
@@ -137,35 +139,40 @@ const goBack = () => {
 onMounted(async () => {
   const code = route.query.code as string;
 
-  if (!code) {
-    error.value = 'Authentication failed: No authorization code provided.';
-    emit('error', error.value);
-    setTimeout(() => router.push('/login'), 3000);
-    return;
-  }
+  // if (!code) {
+  //   error.value = 'Authentication failed: No authorization code provided.';
+  //   emit('error', error.value);
+  //   setTimeout(() => router.push('/login'), 3000);
+  //   return;
+  // }
 
   try {
-    const apiClient = getApiClient();
-    const response = await apiClient.post('/auth/microsoft/token', { code });
+    if (code) {
+      const apiClient = getApiClient();
+      const response = await apiClient.post('/auth/microsoft/token', { code });
 
-    console.log("microsoft toekn response",response)
+      console.log("microsoft toekn response", response)
 
-    if (response.data && response.data.user && response.data.user.email) {
-      userEmail.value = response.data.user.email;
+      if (response.data && response.data.user && response.data.user.email) {
+        userEmail.value = response.data.user.email;
 
-      if (response.data.isNewUser) {
-        // New user: Store token and proceed to biometric registration
-        authStep.value = 'biometricRegistration';
+        if (response.data.isNewUser) {
+          // New user: Store token and proceed to biometric registration
+          authStep.value = 'biometricRegistration';
+        } else {
+          // Existing user: Proceed to biometric login verification
+          authStep.value = 'biometricChoice';
+        }
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
       } else {
-        // Existing user: Proceed to biometric login verification
-        authStep.value = 'biometricChoice';
+        error.value = 'Authentication failed: Could not retrieve user details from server.';
+        emit('error', error.value);
+        setTimeout(() => router.push('/login'), 3000);
       }
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-    } else {
-      error.value = 'Authentication failed: Could not retrieve user details from server.';
-      emit('error', error.value);
-      setTimeout(() => router.push('/login'), 3000);
+    }
+    else {
+      authStep.value = 'biometricRegistration';
     }
   } catch (err: any) {
     error.value = err.response?.data?.message || 'An error occurred during Microsoft authentication.';
@@ -184,10 +191,10 @@ const verifyWithBiometrics = async () => {
     if (response.data && response.data.token) {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
-      
+
       emit('success', response.data);
-      
-      if(props.autoRedirect) {  
+
+      if (props.autoRedirect) {
         router.push(props.redirectPath);
       }
     } else {
@@ -200,7 +207,7 @@ const verifyWithBiometrics = async () => {
     const message = err.response?.data?.message || err.message || 'Verification failed.';
     error.value = message;
     emit('error', message);
-    console.error("Error in verifying biometrics",err);
+    console.error("Error in verifying biometrics", err);
     // setTimeout(() => router.push('/login'), 3000);
   } finally {
     isLoading.value = false;
@@ -220,11 +227,11 @@ const verifyOtpLogin = async () => {
 
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
-      
+
       emit('success', response.data);
 
-      console.log("after verify with otp redirecting",props.redirectPath)
-      if(props.autoRedirect) {  
+      console.log("after verify with otp redirecting", props.redirectPath)
+      if (props.autoRedirect) {
         router.push(props.redirectPath);
       }
     } else {
@@ -249,9 +256,9 @@ const registerBiometrics = async () => {
     if (response.data && response.data.success) {
 
       emit('success', { message: 'Biometric registration completed successfully!' });
-      
+
       console.log("registration success")
-      if(props.autoRedirect) {  
+      if (props.autoRedirect) {
         router.push(props.redirectPath);
       }
     } else {
@@ -260,11 +267,11 @@ const registerBiometrics = async () => {
       // setTimeout(() => router.push("/login"), 3000);
     }
   } catch (err: any) {
-    console.log("Biometric regissssssss faileddd",err)
+    console.log("Biometric regissssssss faileddd", err)
     const message = err.response?.data?.message || err.message || 'Biometric registration failed.';
     error.value = message;
     emit('error', message);
-    
+
     if (err.name === 'NotAllowedError') {
       error.value = 'Biometric registration was cancelled.';
       // localStorage.removeItem('token');  

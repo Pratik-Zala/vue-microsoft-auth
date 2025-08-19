@@ -1,5 +1,7 @@
 <template>
   <div class="w-full flex flex-col items-center gap-3">
+
+    
     <!-- Helper / Info Text -->
     <p class="text-sm text-gray-600 text-center">
       Enable biometrics for <span class="font-medium">faster</span> and <span class="font-medium">more secure</span> logins.
