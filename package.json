@@ -1,6 +1,6 @@
 {
   "name": "@twymai/vue-twymx",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A Vue.js plugin for Microsoft authentication with OAuth2",
   "main": "dist/@twymai/vue-twymx.umd.js",
   "module": "dist/@twymai/vue-twymx.es.js",
