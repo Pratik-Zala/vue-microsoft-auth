@@ -13,7 +13,7 @@
         <div v-if="!error" class="flex justify-center mt-4">
           <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
         </div>
-      </div>
+      </div>  
       
       <div v-if="authStep === 'biometricChoice'">
         <h2 class="text-xl font-bold text-gray-900">Biometric Verification</h2>
@@ -82,6 +82,11 @@
             {{ isLoading ? 'Setting up...' : 'Enable Biometrics' }}
           </button>
         </div>
+        <div class="mt-6">
+          <button @click="authStep='email'" :disabled="isLoading" class="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+            Continue with OTP
+          </button>
+        </div>
       </div>
 
       <p v-if="error" class="text-red-500 text-sm">{{ error }}</p>
@@ -122,7 +127,7 @@ const { sendLoginOtp, verifyLogin, registerBiometrics: authRegisterBiometrics, v
 
 const goBack = () => {
   if (authStep.value === 'microsoft') router.push('/login');
-  else if (authStep.value === 'biometricChoice') authStep.value = 'microsoft';
+  else if (authStep.value === 'biometricChoice') router.push('/login');
   else if (authStep.value === 'biometricRegistration') authStep.value = 'biometricChoice';
   else if (authStep.value === 'email') authStep.value = 'biometricChoice';
   else if (authStep.value === 'otp') authStep.value = 'email';
@@ -142,17 +147,20 @@ onMounted(async () => {
     const apiClient = getApiClient();
     const response = await apiClient.post('/auth/microsoft/token', { code });
 
+    console.log("microsoft toekn response",response)
+
     if (response.data && response.data.user && response.data.user.email) {
       userEmail.value = response.data.user.email;
+
       if (response.data.isNewUser) {
         // New user: Store token and proceed to biometric registration
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
         authStep.value = 'biometricRegistration';
       } else {
         // Existing user: Proceed to biometric login verification
         authStep.value = 'biometricChoice';
       }
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
     } else {
       error.value = 'Authentication failed: Could not retrieve user details from server.';
       emit('error', error.value);
@@ -184,14 +192,15 @@ const verifyWithBiometrics = async () => {
     } else {
       error.value = 'Verification failed.';
       emit('error', error.value);
-      setTimeout(() => router.push('/login'), 3000);
+      console.log("verification failed")
+      // setTimeout(() => router.push('/login'), 3000);
     }
   } catch (err: any) {
     const message = err.response?.data?.message || err.message || 'Verification failed.';
     error.value = message;
     emit('error', message);
-    console.error(err);
-    setTimeout(() => router.push('/login'), 3000);
+    console.error("Error in verifying biometrics",err);
+    // setTimeout(() => router.push('/login'), 3000);
   } finally {
     isLoading.value = false;
   }
@@ -240,27 +249,29 @@ const registerBiometrics = async () => {
 
       emit('success', { message: 'Biometric registration completed successfully!' });
       
+      console.log("registration success")
       if(props.autoRedirect) {  
         router.push(props.redirectPath);
       }
     } else {
       error.value = 'Biometric registration failed.';
       emit('error', error.value);
-      setTimeout(() => router.push(props.redirectPath), 3000);
+      // setTimeout(() => router.push("/login"), 3000);
     }
   } catch (err: any) {
+    console.log("Biometric regissssssss faileddd",err)
     const message = err.response?.data?.message || err.message || 'Biometric registration failed.';
     error.value = message;
     emit('error', message);
-    console.error(err);
     
     if (err.name === 'NotAllowedError') {
-      error.value = 'Biometric registration was cancelled. To continue, you must complete this step. Please log in again to restart the process.';
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      setTimeout(() => router.push('/login'), 4000);
+      error.value = 'Biometric registration was cancelled.';
+      // localStorage.removeItem('token');  
+      // localStorage.removeItem('user');
+      console.log("Not allowed error")
+      // setTimeout(() => router.push('/login'), 4000);
     } else {
-      setTimeout(() => router.push('/login'), 3000);
+      // setTimeout(() => router.push('/login'), 3000);
     }
   } finally {
     isLoading.value = false;

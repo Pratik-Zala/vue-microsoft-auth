@@ -57,8 +57,6 @@ export interface MicrosoftAuthComposable {
   /** Get current access token */
   getAccessToken: () => string | null;
   /** Refresh the access token */
-  refreshToken: () => Promise<string | null>;
-  /** Sign up with Microsoft OAuth */
   signUp: () => Promise<void>;
 }
 

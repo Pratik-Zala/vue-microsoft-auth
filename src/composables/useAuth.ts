@@ -34,10 +34,7 @@ export function useAuth(): AuthComposable {
     });
     const data = response.data;
     if (data.token) {
-      localStorage.setItem('microsoft_auth_token', JSON.stringify({
-        accessToken: data.token,
-        expiresAt: Date.now() + (data.expiresIn * 1000),
-      }));
+      localStorage.setItem('token', data.token);
     }
     return response;
   };
@@ -57,12 +54,11 @@ export function useAuth(): AuthComposable {
         'Content-Type': 'application/json',
       }
     });
+    
     const data = response.data;
+
     if (data.token) {
-      localStorage.setItem('microsoft_auth_token', JSON.stringify({
-        accessToken: data.token,
-        expiresAt: Date.now() + (data.expiresIn * 1000),
-      }));
+      localStorage.setItem('token', data.token);
     }
 
     return response;
@@ -138,6 +134,7 @@ export function useAuth(): AuthComposable {
       });
       return response;
     } catch (error: any) {
+      console.log("Register biometrics failedddd error",error)
       if (error instanceof Error && error.name === 'NotAllowedError') {
         throw new Error('Biometric registration was cancelled');
       }

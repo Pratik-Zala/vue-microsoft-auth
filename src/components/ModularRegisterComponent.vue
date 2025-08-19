@@ -76,8 +76,6 @@ const goBackToDetails = () => {
 
 const handleBiometricSuccess = async (data: any) => {
   console.log("dataaaaaaaa", data)
-  localStorage.setItem('token', data.token);
-  localStorage.setItem('user', JSON.stringify(data.user));
 
   emit('success', data);
 

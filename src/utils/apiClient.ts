@@ -22,6 +22,9 @@ class ApiClient {
     this.instance.interceptors.request.use(
       (config) => {
         const token = this.getStoredToken();
+
+        console.log("getting stored token in vue twymx",token)
+        
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
@@ -44,25 +47,15 @@ class ApiClient {
   }
 
   private getStoredToken(): string | null {
-    try {
-      const tokenData = localStorage.getItem('microsoft_auth_token');
-      if (!tokenData) return null;
+    const token = localStorage.getItem('token');
+    if (!token) return null;
 
-      const parsed = JSON.parse(tokenData);
-      if (parsed.expiresAt && Date.now() > parsed.expiresAt) {
-        this.clearTokens();
-        return null;
-      }
-
-      return parsed.accessToken || null;
-    } catch {
-      return null;
-    }
+    return token;
   }
 
   private clearTokens(): void {
-    localStorage.removeItem('microsoft_auth_token');
-    localStorage.removeItem('microsoft_auth_user');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
   }
 
   private createAuthError(error: any, code?: string): AuthError {

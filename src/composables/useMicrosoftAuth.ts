@@ -32,7 +32,7 @@ export function useMicrosoftAuth(): MicrosoftAuthComposable {
       console.error('Error during logout:', error);
     } finally {
       // Clear local storage
-      localStorage.removeItem('microsoft_auth_user');
+      localStorage.removeItem('user');
       localStorage.removeItem('token');
       currentUser.value = null;
     }
@@ -46,47 +46,9 @@ export function useMicrosoftAuth(): MicrosoftAuthComposable {
     const token = localStorage.getItem('token');
     if (!token) return null;
     
-    try {
-      const tokenData = JSON.parse(token);
-      if (tokenData.expiresAt && Date.now() > tokenData.expiresAt) {
-        localStorage.removeItem('token');
-        return null;
-      }
-      return tokenData.accessToken;
-    } catch {
-      return null;
-    }
+    return token;
   };
 
-  const refreshToken = async (): Promise<string | null> => {
-    const token = localStorage.getItem('token');
-    if (!token) return null;
-
-    try {
-      const tokenData = JSON.parse(token);
-      if (!tokenData.refreshToken) return null;
-
-      const apiClient = getApiClient();
-      const response = await apiClient.post('/auth/refresh', {
-        refreshToken: tokenData.refreshToken,
-      });
-
-      const newTokenData = response.data;
-      const updatedToken = {
-        accessToken: newTokenData.accessToken,
-        refreshToken: newTokenData.refreshToken || tokenData.refreshToken,
-        expiresAt: Date.now() + (newTokenData.expiresIn * 1000),
-      };
-
-      localStorage.setItem('token', JSON.stringify(updatedToken));
-      return updatedToken.accessToken;
-    } catch (error) {
-      console.error('Error refreshing token:', error);
-      localStorage.removeItem('token');
-      currentUser.value = null;
-      return null;
-    }
-  };
 
   // Handle callback from backend OAuth
   const handleCallback = async (): Promise<void> => {
@@ -118,11 +80,9 @@ export function useMicrosoftAuth(): MicrosoftAuthComposable {
         };
 
         currentUser.value = user;
-        localStorage.setItem('microsoft_auth_user', JSON.stringify(user));
-        localStorage.setItem('token', JSON.stringify({
-          accessToken: data.token,
-          expiresAt: Date.now() + (data.expiresIn * 1000),
-        }));
+
+        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('token', data.token);
 
         // Clean up URL
         window.history.replaceState({}, document.title, window.location.pathname);
@@ -137,12 +97,12 @@ export function useMicrosoftAuth(): MicrosoftAuthComposable {
 
   // Initialize user from localStorage
   const initializeUser = (): void => {
-    const savedUser = localStorage.getItem('microsoft_auth_user');
+    const savedUser = localStorage.getItem('user');
     if (savedUser) {
       try {
         currentUser.value = JSON.parse(savedUser);
       } catch {
-        localStorage.removeItem('microsoft_auth_user');
+        localStorage.removeItem('user');
       }
     }
   };
@@ -162,6 +122,5 @@ export function useMicrosoftAuth(): MicrosoftAuthComposable {
     getUser,
     isAuthenticated: () => isAuthenticated.value,
     getAccessToken,
-    refreshToken,
   };
 }
