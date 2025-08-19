@@ -30,7 +30,7 @@
         </div>
       </div>
 
-      <div v-if="authStep === 'email'">
+      <div v-if="authStep === 'email' || authStep ==='email-register'">
         <h2 class="text-2xl font-bold text-center text-gray-900">Enter Email Address</h2>
         <form @submit.prevent="handleSendMail" class="mt-8 space-y-6">
            <div>
@@ -83,7 +83,7 @@
           </button>
         </div>
         <div class="mt-6">
-          <button @click="authStep='email'" :disabled="isLoading" class="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+          <button @click="authStep='email-register'" :disabled="isLoading" class="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
             Continue with OTP
           </button>
         </div>
@@ -118,7 +118,7 @@ const emit = defineEmits<{
 const route = useRoute();
 const router = useRouter();
 const error = ref('');
-const authStep = ref<'microsoft' | 'biometricChoice' | 'biometricRegistration' | 'email' | 'otp'>('microsoft');
+const authStep = ref<'microsoft' | 'biometricChoice' | 'biometricRegistration' | 'email' | 'email-register' | 'otp'>('microsoft');
 const isLoading = ref(false);
 const userEmail = ref('');
 const otp = ref('');
@@ -129,6 +129,7 @@ const goBack = () => {
   if (authStep.value === 'microsoft') router.push('/login');
   else if (authStep.value === 'biometricChoice') router.push('/login');
   else if (authStep.value === 'biometricRegistration') authStep.value = 'biometricChoice';
+  else if (authStep.value === 'email-register') authStep.value = 'biometricRegistration';
   else if (authStep.value === 'email') authStep.value = 'biometricChoice';
   else if (authStep.value === 'otp') authStep.value = 'email';
 };
