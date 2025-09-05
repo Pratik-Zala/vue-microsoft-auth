@@ -301,7 +301,7 @@ const selectVerificationMethod = async (method: 'email' | 'biometric') => {
       isLoading.value = true;
       
       const apiClient = getApiClient();
-      const optionsResponse = await apiClient.post('/auth/webauthn/login/options', { email: email.value });
+      const optionsResponse = await apiClient.post('/auth/webauthn/authenticate/options', { email: email.value });
       const options = optionsResponse.data;
 
       options.challenge = base64UrlToArrayBuffer(options.challenge);
@@ -327,7 +327,7 @@ const selectVerificationMethod = async (method: 'email' | 'biometric') => {
         },
       };
 
-      const response = await apiClient.post('/auth/webauthn/login/verify', {
+      const response = await apiClient.post('/auth/webauthn/authenticate/verify', {
         email: email.value,
         data: credentialForServer,
         challengeToken: options.challengeToken

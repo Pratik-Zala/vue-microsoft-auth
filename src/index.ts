@@ -16,7 +16,7 @@ import AuthContainer from './components/AuthContainer.vue';
 import CompleteAuthComponent from './components/CompleteAuthComponent.vue';
 import ModularLoginComponent from './components/ModularLoginComponent.vue';
 import ModularRegisterComponent from './components/ModularRegisterComponent.vue';
-import MicrosoftAuthCallback from './components/MicrosoftAuthCallback.vue';
+import TwoFactorVerification from './components/TwoFactorVerification.vue';
 import BackButton from './components/BackButton.vue';
 import CredentialsForm from './components/CredentialsForm.vue';
 import RegistrationForm from './components/RegistrationForm.vue';
@@ -50,7 +50,7 @@ export {
   CompleteAuthComponent,
   ModularLoginComponent,
   ModularRegisterComponent,
-  MicrosoftAuthCallback,
+  TwoFactorVerification,
   BackButton,
   CredentialsForm,
   RegistrationForm,

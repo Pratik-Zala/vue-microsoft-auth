@@ -3,7 +3,7 @@ import type { App } from 'vue';
 import type { Router } from 'vue-router';
 import ModularLoginComponent from '../components/ModularLoginComponent.vue';
 import ModularRegisterComponent from '../components/ModularRegisterComponent.vue';
-import MicrosoftAuthCallback from '../components/MicrosoftAuthCallback.vue';
+import TwoFactorVerification from '../components/TwoFactorVerification.vue';
 
 export interface RouterPluginOptions {
   router: Router;
@@ -26,10 +26,10 @@ export const RouterPlugin = {
       router,
       loginPath = '/login',
       registerPath = '/register',
-      callbackPath = '/auth/microsoft/callback',
+      callbackPath = '/auth/two-factor',
       loginName = 'Login',
       registerName = 'Register',
-      callbackName = 'MicrosoftAuthCallback'
+      callbackName = 'TwoFactorVerification'
     } = options;
 
     // Check if routes already exist to avoid conflicts
@@ -66,7 +66,7 @@ export const RouterPlugin = {
       router.addRoute({
         path: callbackPath,
         name: callbackName,
-        component: MicrosoftAuthCallback,
+        component: TwoFactorVerification,
         meta: {
           requiresAuth: false,
           addedByTwymx: true

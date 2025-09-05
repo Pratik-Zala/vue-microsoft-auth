@@ -1,5 +1,5 @@
-import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
-import type { AuthError } from '../types';
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import type { AuthError, ApiResponse, ApiError } from '../types';
 
 class ApiClient {
   private instance: AxiosInstance;
@@ -35,12 +35,23 @@ class ApiClient {
 
     // Response interceptor for error handling
     this.instance.interceptors.response.use(
-      (response) => response,
+      (response: AxiosResponse<ApiResponse>) => {
+        // For successful responses, return the response as is
+        // The data will be accessed as response.data in the calling code
+        return response;
+      },
       async (error) => {
         if (error.response?.status === 401) {
           this.clearTokens();
           throw this.createAuthError(error, 'UNAUTHORIZED');
         }
+        
+        // Handle API error responses that follow our new structure
+        if (error.response?.data && typeof error.response.data === 'object' && 'success' in error.response.data) {
+          const apiError = error.response.data as ApiError;
+          throw this.createAuthError(error, apiError.message || 'API_ERROR');
+        }
+        
         throw this.createAuthError(error);
       }
     );
@@ -59,27 +70,37 @@ class ApiClient {
   }
 
   private createAuthError(error: any, code?: string): AuthError {
-    const authError = new Error(error.message || 'An authentication error occurred') as AuthError;
+    let message = error.message || 'An authentication error occurred';
+    
+    // Extract message from our new API error structure
+    if (error.response?.data && typeof error.response.data === 'object') {
+      const apiError = error.response.data as ApiError;
+      if (apiError.message) {
+        message = apiError.message;
+      }
+    }
+    
+    const authError = new Error(message) as AuthError;
     authError.code = code || error.response?.data?.code || 'UNKNOWN_ERROR';
     authError.details = error.response?.data || error;
     return authError;
   }
 
-  // Public methods
-  public get(url: string, config?: AxiosRequestConfig) {
-    return this.instance.get(url, config);
+  // Public methods with proper typing
+  public get<T = any>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<ApiResponse<T>>> {
+    return this.instance.get<ApiResponse<T>>(url, config);
   }
 
-  public post(url: string, data?: any, config?: AxiosRequestConfig) {
-    return this.instance.post(url, data, config);
+  public post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<ApiResponse<T>>> {
+    return this.instance.post<ApiResponse<T>>(url, data, config);
   }
 
-  public put(url: string, data?: any, config?: AxiosRequestConfig) {
-    return this.instance.put(url, data, config);
+  public put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<ApiResponse<T>>> {
+    return this.instance.put<ApiResponse<T>>(url, data, config);
   }
 
-  public delete(url: string, config?: AxiosRequestConfig) {
-    return this.instance.delete(url, config);
+  public delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<ApiResponse<T>>> {
+    return this.instance.delete<ApiResponse<T>>(url, config);
   }
 
   public getBaseURL(): string {

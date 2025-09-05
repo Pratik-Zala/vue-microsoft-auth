@@ -214,13 +214,13 @@ this.$router.push({ name: 'Login' })
 this.$router.push({ name: 'Register' })
 ```
 
-### MicrosoftAuthCallback
+### TwoFactorVerification
 
-Component for handling Microsoft OAuth callback after authentication:
+Component for handling two-factor authentication verification (supports both SSO and regular auth flows):
 
 ```vue
 <template>
-  <MicrosoftAuthCallback 
+  <TwoFactorVerification 
     :redirect-path="'/dashboard'"
     :on-success="handleAuthSuccess"
     :on-error="handleAuthError"
@@ -230,7 +230,7 @@ Component for handling Microsoft OAuth callback after authentication:
 </template>
 
 <script setup>
-import { MicrosoftAuthCallback } from '@twymai/vue-twymx'
+import { TwoFactorVerification } from '@twymai/vue-twymx'
 
 const handleAuthSuccess = (data) => {
   console.log('Authentication successful:', data)

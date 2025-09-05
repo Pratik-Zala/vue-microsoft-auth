@@ -27,7 +27,7 @@
     </div>
   </div>
         <!-- Biometric Setup Step -->
-        <MicrosoftAuthCallback
+        <TwoFactorVerification
       v-if="registrationStep === 'biometric'"
         :auto-redirect="true"
         @success="handleBiometricSuccess"
@@ -42,7 +42,7 @@ import { useRouter } from 'vue-router';
 import { useAuth } from '../composables/useAuth';
 import { useMicrosoftAuth } from '../composables/useMicrosoftAuth';
 import BackButton from './BackButton.vue';
-import MicrosoftAuthCallback from './MicrosoftAuthCallback.vue';
+import TwoFactorVerification from './TwoFactorVerification.vue';
 import OtpVerification from './OtpVerification.vue';
 import RegistrationForm from './RegistrationForm.vue';
 

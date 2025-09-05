@@ -10,13 +10,13 @@ export function useMicrosoftAuth(): MicrosoftAuthComposable {
 
   const signIn = async (): Promise<void> => {
     const apiClient = getApiClient();
-    const url = `${apiClient.getBaseURL()}/auth/microsoft`;
+    const url = `${apiClient.getBaseURL()}/auth/sso/microsoft`;
     window.location.href = url;
   };
 
   const signUp = async (): Promise<void> => {
     const apiClient = getApiClient();
-    const url = `${apiClient.getBaseURL()}/auth/microsoft`;
+    const url = `${apiClient.getBaseURL()}/auth/sso/microsoft`;
     window.location.href = url;
   };
 
@@ -50,51 +50,6 @@ export function useMicrosoftAuth(): MicrosoftAuthComposable {
   };
 
 
-  // Handle callback from backend OAuth
-  const handleCallback = async (): Promise<void> => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
-    const error = urlParams.get('error');
-
-    if (error) {
-      throw new Error(`Authentication error: ${error}`);
-    }
-
-    if (!code) return;
-
-    try {
-      const apiClient = getApiClient();
-      const response = await apiClient.post('/auth/microsoft/token', {
-        code
-      });
-
-      const data = response.data;
-      
-      if (data.user && data.user.email) {
-        const user: MicrosoftAuthUser = {
-          id: data.user.id || data.user.email,
-          displayName: data.user.displayName || data.user.name || data.user.email,
-          email: data.user.email,
-          accessToken: data.token,
-          isNewUser: data.isNewUser,
-        };
-
-        currentUser.value = user;
-
-        localStorage.setItem('user', JSON.stringify(user));
-        localStorage.setItem('token', data.token);
-
-        // Clean up URL
-        window.history.replaceState({}, document.title, window.location.pathname);
-      } else {
-        throw new Error('Invalid user data received from server');
-      }
-    } catch (error) {
-      console.error('Error handling callback:', error);
-      throw error;
-    }
-  };
-
   // Initialize user from localStorage
   const initializeUser = (): void => {
     const savedUser = localStorage.getItem('user');
@@ -109,11 +64,6 @@ export function useMicrosoftAuth(): MicrosoftAuthComposable {
 
   // Initialize on mount
   initializeUser();
-
-  // Handle callback if we're returning from OAuth
-  if (window.location.search.includes('code=')) {
-    handleCallback();
-  }
 
   return {
     signIn,

@@ -7,13 +7,6 @@
         </svg>
       </button>
 
-      <div v-if="authStep === 'microsoft'">
-        <h2 class="text-xl font-bold text-gray-900">Authenticating with Microsoft...</h2>
-        <div v-if="!error" class="flex justify-center mt-4">
-          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-        </div>
-      </div>
-
       <div v-if="authStep === 'biometricChoice'">
         <h2 class="text-xl font-bold text-gray-900">Biometric Verification</h2>
         <p class="mt-2 text-gray-600">Please verify your identity to complete the login.</p>
@@ -31,7 +24,7 @@
         </div>
       </div>
 
-      <div v-if="authStep === 'email' || authStep === 'email-register'">
+      <div v-if="authStep === 'email'">
         <h2 class="text-2xl font-bold text-center text-gray-900">Enter Email Address</h2>
         <form @submit.prevent="handleSendMail" class="mt-8 space-y-6">
           <div>
@@ -84,7 +77,7 @@
           </button>
         </div>
         <div class="mt-6">
-          <button @click="authStep = 'email-register'" :disabled="isLoading"
+          <button @click="authStep = 'email'" :disabled="isLoading"
             class="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
             Continue with OTP
           </button>
@@ -120,67 +113,57 @@ const emit = defineEmits<{
 const route = useRoute();
 const router = useRouter();
 const error = ref('');
-const authStep = ref<'microsoft' | 'biometricChoice' | 'biometricRegistration' | 'email' | 'email-register' | 'otp'>('microsoft');
+const authStep = ref<'biometricChoice' | 'biometricRegistration' | 'email' | 'otp'>('biometricChoice');
 const isLoading = ref(false);
 const userEmail = ref('');
 const otp = ref('');
+const sessionToken = ref('');  // Store session token for 2FA completion
 
 const { sendLoginOtp, verifyLogin, registerBiometrics: authRegisterBiometrics, verifyBiometrics } = useAuth();
 
 const goBack = () => {
-  if (authStep.value === 'microsoft') router.push('/login');
-  else if (authStep.value === 'biometricChoice') router.push('/login');
+  if (authStep.value === 'biometricChoice') router.push('/login');
   else if (authStep.value === 'biometricRegistration') router.push('/login');
-  else if (authStep.value === 'email-register') authStep.value = 'biometricRegistration';
-  else if (authStep.value === 'email') authStep.value = 'biometricChoice';
+  else if (authStep.value === 'email') {
+    // Go back to previous step - we'll determine this based on user state when component mounted
+    authStep.value = 'biometricChoice';
+  }
   else if (authStep.value === 'otp') authStep.value = 'email';
 };
 
 onMounted(async () => {
-  const code = route.query.code as string;
-
-  // if (!code) {
-  //   error.value = 'Authentication failed: No authorization code provided.';
-  //   emit('error', error.value);
-  //   setTimeout(() => router.push('/login'), 3000);
-  //   return;
-  // }
-
   try {
-    if (code) {
-      const apiClient = getApiClient();
-      const response = await apiClient.post('/auth/microsoft/token', { code });
+    // Get session token and user info from route params
+    sessionToken.value = route.query.sessionToken as string;
+    userEmail.value = decodeURIComponent(route.query.email as string || '');
 
-      console.log("microsoft toekn response", response)
+    if (!sessionToken.value || !userEmail.value) {
+      error.value = 'Invalid session. Please try logging in again.';
+      emit('error', error.value);
+      setTimeout(() => router.push('/login'), 3000);
+      return;
+    }
 
-      if (response.data && response.data.user && response.data.user.email) {
-        userEmail.value = response.data.user.email;
-
-        if (response.data.isNewUser) {
-          // New user: Store token and proceed to biometric registration
-          authStep.value = 'biometricRegistration';
-        } else {
-          // Existing user: Proceed to biometric login verification
-          authStep.value = 'biometricChoice';
-        }
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+    // Check if user has biometrics set up by attempting to get login options
+    try {
+      await getApiClient().post('/auth/webauthn/authenticate/options', { email: userEmail.value }, {
+        headers: { Authorization: `Session ${sessionToken.value}` }
+      });
+      // If successful, user has passkeys - show biometric choice
+      authStep.value = 'biometricChoice';
+    } catch (err: any) {
+      // If failed, user likely has no passkeys - show registration
+      const errorMessage = err.response?.data?.message || err.message || '';
+      if (err.response?.status === 400 || errorMessage.includes('no passkeys') || errorMessage.includes('passkey')) {
+        authStep.value = 'biometricRegistration';
       } else {
-        error.value = 'Authentication failed: Could not retrieve user details from server.';
-        emit('error', error.value);
-        setTimeout(() => router.push('/login'), 3000);
+        // Some other error, show biometric choice as fallback
+        authStep.value = 'biometricChoice';
       }
     }
-    else {
-      const user = localStorage.getItem('user');
-      if (user) {
-        const userData = JSON.parse(user);
-        userEmail.value = userData.email;
-      }
-      authStep.value = 'biometricRegistration';
-    }
+
   } catch (err: any) {
-    error.value = err.response?.data?.message || 'An error occurred during Microsoft authentication.';
+    error.value = err.response?.data?.message || 'An error occurred during authentication setup.';
     emit('error', error.value);
     console.error(err);
     setTimeout(() => router.push('/login'), 3000);
@@ -191,9 +174,9 @@ const verifyWithBiometrics = async () => {
   isLoading.value = true;
   error.value = '';
   try {
-    const response = await verifyBiometrics(userEmail.value);
+    const response = await verifyBiometrics(userEmail.value, sessionToken.value);
 
-    if (response.data && response.data.token) {
+    if (response.success && response.data?.token) {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
 
@@ -203,17 +186,14 @@ const verifyWithBiometrics = async () => {
         router.push(props.redirectPath);
       }
     } else {
-      error.value = 'Verification failed.';
+      error.value = response.message || 'Verification failed.';
       emit('error', error.value);
-      console.log("verification failed")
-      // setTimeout(() => router.push('/login'), 3000);
     }
   } catch (err: any) {
     const message = err.response?.data?.message || err.message || 'Verification failed.';
     error.value = message;
     emit('error', message);
     console.error("Error in verifying biometrics", err);
-    // setTimeout(() => router.push('/login'), 3000);
   } finally {
     isLoading.value = false;
   }
@@ -226,21 +206,20 @@ const verifyOtpLogin = async () => {
     const response = await verifyLogin({
       email: userEmail.value,
       otp: otp.value,
+      sessionToken: sessionToken.value
     });
 
-    if (response.data && response.data.token) {
-
+    if (response.success && response.data?.token) {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
 
       emit('success', response.data);
 
-      console.log("after verify with otp redirecting", props.redirectPath)
       if (props.autoRedirect) {
         router.push(props.redirectPath);
       }
     } else {
-      error.value = 'Login failed: No token received from server.';
+      error.value = response.message || 'Login failed: No token received from server.';
       emit('error', error.value);
     }
   } catch (err: any) {
@@ -256,35 +235,30 @@ const registerBiometrics = async () => {
   isLoading.value = true;
   error.value = '';
   try {
-    const response = await authRegisterBiometrics(userEmail.value);
+    // Register biometrics using the session token directly
+    // The webauthn setup endpoints support session tokens via sessionMiddleware
+    const response = await authRegisterBiometrics(userEmail.value, sessionToken.value);
 
-    if (response.data && response.data.success) {
+    if (response.success && response.data?.token) {
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      
+      emit('success', response.data);
 
-      emit('success', { message: 'Biometric registration completed successfully!' });
-
-      console.log("registration success")
       if (props.autoRedirect) {
         router.push(props.redirectPath);
       }
     } else {
-      error.value = 'Biometric registration failed.';
+      error.value = response.message || 'Biometric registration failed.';
       emit('error', error.value);
-      // setTimeout(() => router.push("/login"), 3000);
     }
   } catch (err: any) {
-    console.log("Biometric regissssssss faileddd", err)
     const message = err.response?.data?.message || err.message || 'Biometric registration failed.';
     error.value = message;
     emit('error', message);
 
     if (err.name === 'NotAllowedError') {
       error.value = 'Biometric registration was cancelled.';
-      // localStorage.removeItem('token');  
-      // localStorage.removeItem('user');
-      console.log("Not allowed error")
-      // setTimeout(() => router.push('/login'), 4000);
-    } else {
-      // setTimeout(() => router.push('/login'), 3000);
     }
   } finally {
     isLoading.value = false;
@@ -295,16 +269,18 @@ const handleSendMail = async () => {
   try {
     error.value = '';
     isLoading.value = true;
-    await sendLoginOtp(userEmail.value);
-    authStep.value = 'otp';
+    const response = await sendLoginOtp(userEmail.value);
+    if (response.success) {
+      authStep.value = 'otp';
+    } else {
+      error.value = response.message || 'Failed to send OTP.';
+      emit('error', error.value);
+    }
   } catch (err: any) {
     const message = err.response?.data?.message || err.message || 'Verification failed.';
     error.value = message;
     emit('error', message);
     console.error(err);
-    if (err.name === 'NotAllowedError') {
-      authStep.value = 'microsoft';
-    }
   } finally {
     isLoading.value = false;
   }

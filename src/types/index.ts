@@ -1,4 +1,20 @@
 
+// API Response Types
+export interface ApiResponse<T = any> {
+  success: boolean;
+  timestamp: string;
+  data?: T;
+  message?: string;
+  errors?: string[];
+}
+
+export interface ApiError {
+  success: false;
+  message: string;
+  timestamp: string;
+  errors?: string[];
+}
+
 export interface MicrosoftAuthOptions {
   /** Optional: Custom redirect URI after authentication */
   redirectUri?: string;
@@ -60,25 +76,11 @@ export interface MicrosoftAuthComposable {
   signUp: () => Promise<void>;
 }
 
-export interface AuthComposable {
-  login: (userData: LoginData) => Promise<any>;
-  verifyLogin: (userData: VerifyLogin) => Promise<any>;
-  /** Register a new user with email/password */
-  register: (userData: RegisterData) => Promise<any>;
-  /** Send OTP to email for verification */
-  sendLoginOtp: (email: string) => Promise<void>;
-  sendRegisterOtp: (email: string) => Promise<void>;
-  /** Verify registration with OTP */
-  verifyRegistration: (email: string, otp: string) => Promise<any>;
-  /** Register biometric authentication */
-  registerBiometrics: (email: string) => Promise<any>;
-  /** Verify biometric authentication */
-  verifyBiometrics: (email: string) => Promise<any>;
-}
 
 export interface VerifyLogin {
   email: string;
   otp: string;
+  sessionToken?: string;  // Optional session token for 2FA completion
 }
 
 export interface LoginData {
@@ -122,6 +124,87 @@ export interface AuthError extends Error {
   code: string;
   /** Additional error details */
   details?: any;
+}
+
+// Specific API Response Types for Auth Endpoints
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  username?: string;
+  createdAt: string;
+  updatedAt: string;
+  provider?: string;
+  providerId?: string;
+  emailVerified: boolean;
+  metaData?: any;
+  passkeys?: Passkey[];
+}
+
+export interface Passkey {
+  id: string;
+  credentialID: string;
+  publicKey: any;
+  userId: string;
+  counter: number;
+  deviceType: string;
+  backedUp: boolean;
+  transports?: string;
+}
+
+export interface LoginResponse {
+  message: string;
+  success: boolean;
+}
+
+export interface RegisterResponse {
+  message: string;
+  user: User;
+  token: string;
+}
+
+export interface VerifyLoginResponse {
+  user: User;
+  token: string;
+}
+
+export interface BiometricSetupResponse {
+  success: boolean;
+  token: string;
+  user: User;
+  message: string;
+}
+
+export interface BiometricVerifyResponse {
+  success: boolean;
+  token: string;
+  user: User;
+  isNewUser?: boolean;
+}
+
+export interface TwoFactorSessionResponse {
+  requiresTwoFA: boolean;
+  sessionToken: string;
+  isNewUser: boolean;
+  email: string;
+}
+
+export interface CompleteTwoFAResponse {
+  user: User;
+  token: string;
+  isNewUser: boolean;
+}
+
+// Update AuthComposable to use typed responses
+export interface AuthComposable {
+  login: (userData: LoginData) => Promise<ApiResponse<LoginResponse>>;
+  verifyLogin: (userData: VerifyLogin) => Promise<ApiResponse<VerifyLoginResponse>>;
+  register: (userData: RegisterData) => Promise<ApiResponse<RegisterResponse>>;
+  sendLoginOtp: (email: string) => Promise<ApiResponse<{ otp: string }>>;
+  sendRegisterOtp: (email: string) => Promise<ApiResponse<void>>;
+  verifyRegistration: (email: string, otp: string) => Promise<ApiResponse<void>>;
+  registerBiometrics: (email: string, sessionToken?: string) => Promise<ApiResponse<BiometricSetupResponse>>;
+  verifyBiometrics: (email: string, sessionToken?: string) => Promise<ApiResponse<BiometricVerifyResponse>>;
 }
 
 // Event types for plugin events
