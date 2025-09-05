@@ -5,57 +5,41 @@ import { ApiClientPlugin } from './plugin/apiClient';
 import { RouterPlugin } from './plugin/router';
 
 // Composables
-import { useMicrosoftAuth } from './composables/useMicrosoftAuth';
 import { useAuth } from './composables/useAuth';
+import { useMicrosoftAuth } from './composables/useMicrosoftAuth';
 
 // Components
+import AuthContainer from './components/AuthContainer.vue';
+import BackButton from './components/BackButton.vue';
+import BiometricSetupButton from './components/BiometricSetupButton.vue';
+import CredentialsForm from './components/CredentialsForm.vue';
 import MicrosoftSignInButton from './components/MicrosoftSignInButton.vue';
 import MicrosoftSignUpButton from './components/MicrosoftSignUpButton.vue';
-import BiometricSetupButton from './components/BiometricSetupButton.vue';
-import AuthContainer from './components/AuthContainer.vue';
-import CompleteAuthComponent from './components/CompleteAuthComponent.vue';
 import ModularLoginComponent from './components/ModularLoginComponent.vue';
 import ModularRegisterComponent from './components/ModularRegisterComponent.vue';
-import TwoFactorVerification from './components/TwoFactorVerification.vue';
-import BackButton from './components/BackButton.vue';
-import CredentialsForm from './components/CredentialsForm.vue';
-import RegistrationForm from './components/RegistrationForm.vue';
-import VerificationChoice from './components/VerificationChoice.vue';
 import OtpVerification from './components/OtpVerification.vue';
+import RegistrationForm from './components/RegistrationForm.vue';
+import TwoFactorVerification from './components/TwoFactorVerification.vue';
+import VerificationChoice from './components/VerificationChoice.vue';
 
 // Types
-export type { 
-  MicrosoftAuthOptions, 
-  MicrosoftAuthUser, 
-  MicrosoftAuthComposable,
-  RegisterData,
-  BiometricOptions,
-  AuthComposable
+export type {
+  AuthComposable, BiometricOptions, MicrosoftAuthComposable, MicrosoftAuthOptions,
+  MicrosoftAuthUser, RegisterData
 } from './types';
 
 
 // Named exports for composables
-export { 
-  useMicrosoftAuth,
+export {
   MicrosoftAuth,
-  useAuth
+  useAuth, useMicrosoftAuth
 };
 
 // Named exports for components
-export { 
-  MicrosoftSignInButton, 
-  MicrosoftSignUpButton, 
-  BiometricSetupButton,
-  AuthContainer,
-  CompleteAuthComponent,
-  ModularLoginComponent,
-  ModularRegisterComponent,
-  TwoFactorVerification,
-  BackButton,
-  CredentialsForm,
-  RegistrationForm,
-  VerificationChoice,
-  OtpVerification
+export {
+  AuthContainer, BackButton, BiometricSetupButton, CredentialsForm, MicrosoftSignInButton,
+  MicrosoftSignUpButton, ModularLoginComponent,
+  ModularRegisterComponent, OtpVerification, RegistrationForm, TwoFactorVerification, VerificationChoice
 };
 
 // Plugin install function for manual installation

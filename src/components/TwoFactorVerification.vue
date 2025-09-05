@@ -92,7 +92,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { getApiClient } from '../utils/apiClient';
 import { useAuth } from '../composables/useAuth';
 
 interface Props {
@@ -119,7 +118,7 @@ const userEmail = ref('');
 const otp = ref('');
 const sessionToken = ref('');  // Store session token for 2FA completion
 
-const { sendLoginOtp, verifyLogin, registerBiometrics: authRegisterBiometrics, verifyBiometrics } = useAuth();
+const { sendLoginOtp, verifyLoginOtp, registerBiometrics: authRegisterBiometrics, verifyBiometrics } = useAuth();
 
 const goBack = () => {
   if (authStep.value === 'biometricChoice') router.push('/login');
@@ -133,9 +132,10 @@ const goBack = () => {
 
 onMounted(async () => {
   try {
-    // Get session token and user info from route params
+    // Get session token, user info, and isNewUser from route params
     sessionToken.value = route.query.sessionToken as string;
     userEmail.value = decodeURIComponent(route.query.email as string || '');
+    const isNewUser = route.query.isNewUser === 'true';
 
     if (!sessionToken.value || !userEmail.value) {
       error.value = 'Invalid session. Please try logging in again.';
@@ -144,22 +144,13 @@ onMounted(async () => {
       return;
     }
 
-    // Check if user has biometrics set up by attempting to get login options
-    try {
-      await getApiClient().post('/auth/webauthn/authenticate/options', { email: userEmail.value }, {
-        headers: { Authorization: `Session ${sessionToken.value}` }
-      });
-      // If successful, user has passkeys - show biometric choice
+    // Determine auth step based on isNewUser flag from backend
+    if (isNewUser) {
+      // New user needs to set up biometrics
+      authStep.value = 'biometricRegistration';
+    } else {
+      // Existing user can choose biometric verification
       authStep.value = 'biometricChoice';
-    } catch (err: any) {
-      // If failed, user likely has no passkeys - show registration
-      const errorMessage = err.response?.data?.message || err.message || '';
-      if (err.response?.status === 400 || errorMessage.includes('no passkeys') || errorMessage.includes('passkey')) {
-        authStep.value = 'biometricRegistration';
-      } else {
-        // Some other error, show biometric choice as fallback
-        authStep.value = 'biometricChoice';
-      }
     }
 
   } catch (err: any) {
@@ -174,19 +165,19 @@ const verifyWithBiometrics = async () => {
   isLoading.value = true;
   error.value = '';
   try {
-    const response = await verifyBiometrics(userEmail.value, sessionToken.value);
+    const data = await verifyBiometrics(userEmail.value, sessionToken.value);
 
-    if (response.success && response.data?.token) {
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
+    if (data?.token) {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
 
-      emit('success', response.data);
+      emit('success', data);
 
       if (props.autoRedirect) {
         router.push(props.redirectPath);
       }
     } else {
-      error.value = response.message || 'Verification failed.';
+      error.value = 'Verification failed.';
       emit('error', error.value);
     }
   } catch (err: any) {
@@ -203,23 +194,23 @@ const verifyOtpLogin = async () => {
   isLoading.value = true;
   error.value = '';
   try {
-    const response = await verifyLogin({
+    const data = await verifyLoginOtp({
       email: userEmail.value,
       otp: otp.value,
       sessionToken: sessionToken.value
     });
 
-    if (response.success && response.data?.token) {
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
+    if (data?.token) {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
 
-      emit('success', response.data);
+      emit('success', data);
 
       if (props.autoRedirect) {
         router.push(props.redirectPath);
       }
     } else {
-      error.value = response.message || 'Login failed: No token received from server.';
+      error.value = 'Login failed: No token received from server.';
       emit('error', error.value);
     }
   } catch (err: any) {
@@ -237,19 +228,19 @@ const registerBiometrics = async () => {
   try {
     // Register biometrics using the session token directly
     // The webauthn setup endpoints support session tokens via sessionMiddleware
-    const response = await authRegisterBiometrics(userEmail.value, sessionToken.value);
+    const data = await authRegisterBiometrics(userEmail.value, sessionToken.value);
 
-    if (response.success && response.data?.token) {
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-      
-      emit('success', response.data);
+    if (data?.token) {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      emit('success', data);
 
       if (props.autoRedirect) {
         router.push(props.redirectPath);
       }
     } else {
-      error.value = response.message || 'Biometric registration failed.';
+      error.value = 'Biometric registration failed.';
       emit('error', error.value);
     }
   } catch (err: any) {
@@ -269,11 +260,11 @@ const handleSendMail = async () => {
   try {
     error.value = '';
     isLoading.value = true;
-    const response = await sendLoginOtp(userEmail.value);
-    if (response.success) {
+    const data = await sendLoginOtp(userEmail.value, sessionToken.value);
+    if (data) {
       authStep.value = 'otp';
     } else {
-      error.value = response.message || 'Failed to send OTP.';
+      error.value = 'Failed to send OTP.';
       emit('error', error.value);
     }
   } catch (err: any) {

@@ -1,14 +1,13 @@
-import type { 
-  AuthComposable, 
-  LoginData, 
-  RegisterData, 
-  VerifyLogin,
-  LoginResponse,
-  RegisterResponse,
-  VerifyLoginResponse,
+import type {
+  AuthComposable,
   BiometricSetupResponse,
   BiometricVerifyResponse,
-  ApiResponse
+  LoginData,
+  LoginResponse,
+  RegisterData,
+  RegisterResponse,
+  VerifyLogin,
+  VerifyLoginResponse
 } from '../types';
 import { getApiClient } from '../utils/apiClient';
 
@@ -40,7 +39,7 @@ const arrayBufferToBase64Url = (buffer: ArrayBuffer): string => {
 export function useAuth(): AuthComposable {
   const apiClient = getApiClient();
 
-  const login = async (userData: LoginData): Promise<ApiResponse<LoginResponse>> => {
+  const login = async (userData: LoginData): Promise<LoginResponse | undefined> => {
     const response = await apiClient.post<LoginResponse>(`/auth/login`, userData, {
       headers: {
         'Content-Type': 'application/json',
@@ -50,102 +49,112 @@ export function useAuth(): AuthComposable {
     const apiResponse = response.data;
     // Note: Login typically doesn't return a token immediately, it returns a success message
     // Token is provided after 2FA verification
-    return apiResponse;
+    return apiResponse.data;
   };
 
-  const verifyLogin = async (userData: VerifyLogin): Promise<ApiResponse<VerifyLoginResponse>> => {
-    const response = await apiClient.post<VerifyLoginResponse>(`/auth/login/verify`, userData, {
-      headers: {
-        'Content-Type': 'application/json',
-      }
+  const verifyLoginOtp = async (userData: VerifyLogin): Promise<VerifyLoginResponse | undefined> => {
+    // Prepare headers - include Session token if provided for 2FA flow
+    const headers: any = {
+      'Content-Type': 'application/json',
+    };
+
+    const { sessionToken, ...requestData } = userData;
+
+    if (sessionToken) {
+      headers.Authorization = `Session ${sessionToken}`;
+    }
+
+    const response = await apiClient.post<VerifyLoginResponse>(`/auth/2fa/verify-email`, requestData, {
+      headers
     });
-    
+
     const apiResponse = response.data;
     if (apiResponse.data?.token) {
       localStorage.setItem('token', apiResponse.data.token);
     }
-    return apiResponse;
+    return apiResponse.data;
   };
 
-  const register = async (userData: RegisterData): Promise<ApiResponse<RegisterResponse>> => {
+  const register = async (userData: RegisterData): Promise<RegisterResponse | undefined> => {
     const response = await apiClient.post<RegisterResponse>(`/auth/register`, userData, {
       headers: {
         'Content-Type': 'application/json',
       }
     });
-    
-    const apiResponse = response.data;
 
-    if (apiResponse.data?.token) {
-      localStorage.setItem('token', apiResponse.data.token);
+    const apiResponse = response.data;
+    return apiResponse.data;
+  };
+
+  const sendRegisterOtp = async (email: string): Promise<void> => {
+    await apiClient.post<void>(`/auth/public/email/send-verification`, { email }, {
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+    return;
+  };
+
+  const sendLoginOtp = async (email: string, sessionToken?: string): Promise<{ otp: string } | undefined> => {
+    // Prepare headers - include Session token if provided for 2FA flow
+    const headers: any = {
+      'Content-Type': 'application/json',
+    };
+
+    if (sessionToken) {
+      headers.Authorization = `Session ${sessionToken}`;
     }
 
-    return apiResponse;
+    const response = await apiClient.post<{ otp: string }>(`/auth/2fa/send-email`, { email }, {
+      headers
+    });
+    return response.data.data;
   };
 
-  const sendRegisterOtp = async (email: string): Promise<ApiResponse<void>> => {
-    const response = await apiClient.post<void>(`/auth/register/send-otp`, { email }, {
+  const verifyRegistrationOtp = async (email: string, otp: string): Promise<void> => {
+    await apiClient.post<void>(`/auth/public/email/verify`, { email, otp }, {
       headers: {
         'Content-Type': 'application/json',
       }
     });
-    return response.data;
   };
 
-  const sendLoginOtp = async (email: string): Promise<ApiResponse<{ otp: string }>> => {
-    const response = await apiClient.post<{ otp: string }>(`/auth/login/send-otp`, { email }, {
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    });
-    return response.data;
-  };
-
-  const verifyRegistration = async (email: string, otp: string): Promise<ApiResponse<void>> => {
-    const response = await apiClient.post<void>(`/auth/register/verify`, { email, otp }, {
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    });
-    return response.data;
-  };
-
-  const registerBiometrics = async (email: string, sessionToken?: string): Promise<ApiResponse<BiometricSetupResponse>> => {
+  const registerBiometrics = async (email: string, sessionToken?: string): Promise<BiometricSetupResponse | undefined> => {
     try {
       // Prepare headers - include Session token if provided for 2FA flow
       const headers: any = {
         'Content-Type': 'application/json',
       };
-      
+
       if (sessionToken) {
         headers.Authorization = `Session ${sessionToken}`;
       }
-      
+
       // Get registration options from backend
       const optionsResponse = await apiClient.post<any>(`/auth/webauthn/setup/options`, { email }, {
         headers
       });
-      
+
       // Debug logging
       console.log('Full WebAuthn registration response:', optionsResponse.data);
       console.log('WebAuthn registration options data:', optionsResponse.data.data);
-      
+
       const options = optionsResponse.data.data;
-      
+
       if (!options) {
         throw new Error('No registration options data received from server');
       }
-      
+
       console.log('WebAuthn registration options received:', options);
-      
+
       // Validate and convert challenge
       if (!options.challenge) {
         throw new Error('No challenge received from server');
       }
-      
+
       // Convert base64url to ArrayBuffer
       options.challenge = base64UrlToArrayBuffer(options.challenge);
-      
+
       if (options.user && options.user.id) {
         options.user.id = base64UrlToArrayBuffer(options.user.id);
       }
@@ -173,11 +182,11 @@ export function useAuth(): AuthComposable {
       const verifyHeaders: any = {
         'Content-Type': 'application/json',
       };
-      
+
       if (sessionToken) {
         verifyHeaders.Authorization = `Session ${sessionToken}`;
       }
-      
+
       // Send to backend for verification
       const response = await apiClient.post<BiometricSetupResponse>(`/auth/webauthn/setup/verify`, {
         ...credentialForServer,
@@ -186,14 +195,14 @@ export function useAuth(): AuthComposable {
       }, {
         headers: verifyHeaders
       });
-      
+
       const apiResponse = response.data;
       if (apiResponse.data?.token) {
         localStorage.setItem('token', apiResponse.data.token);
       }
-      return apiResponse;
+      return apiResponse.data;
     } catch (error: any) {
-      console.log("Register biometrics failedddd error",error)
+      console.log("Register biometrics failedddd error", error)
       if (error instanceof Error && error.name === 'NotAllowedError') {
         throw new Error('Biometric registration was cancelled');
       }
@@ -201,42 +210,42 @@ export function useAuth(): AuthComposable {
     }
   };
 
-  const verifyBiometrics = async (email: string, sessionToken?: string): Promise<ApiResponse<BiometricVerifyResponse>> => {
+  const verifyBiometrics = async (email: string, sessionToken?: string): Promise<BiometricVerifyResponse | undefined> => {
     try {
       // Prepare headers - include Session token if provided for 2FA flow
       const headers: any = {
         'Content-Type': 'application/json',
       };
-      
-      if (sessionToken) { 
+
+      if (sessionToken) {
         headers.Authorization = `Session ${sessionToken}`;
       }
-      
+
       // Get login options from backend
       const optionsResponse = await apiClient.post<any>(`/auth/webauthn/authenticate/options`, { email }, {
         headers
       });
-      
+
       // Debug logging
       console.log('Full WebAuthn response:', optionsResponse.data);
       console.log('WebAuthn options data:', optionsResponse.data.data);
-      
+
       const options = optionsResponse.data.data;
-      
+
       if (!options) {
         throw new Error('No options data received from server');
       }
-      
+
       console.log('WebAuthn options received:', options);
-      
+
       // Validate and convert challenge
       if (!options.challenge) {
         throw new Error('No challenge received from server');
       }
-      
+
       // Convert base64url to ArrayBuffer
       options.challenge = base64UrlToArrayBuffer(options.challenge);
-      
+
       if (options.allowCredentials) {
         for (const cred of options.allowCredentials) {
           if (!cred.id) {
@@ -272,11 +281,11 @@ export function useAuth(): AuthComposable {
       const verifyHeaders: any = {
         'Content-Type': 'application/json',
       };
-      
+
       if (sessionToken) {
         verifyHeaders.Authorization = `Session ${sessionToken}`;
       }
-      
+
       // Send to backend for verification
       const response = await apiClient.post<BiometricVerifyResponse>(`/auth/webauthn/authenticate/verify`, {
         email,
@@ -286,11 +295,11 @@ export function useAuth(): AuthComposable {
       }, {
         headers: verifyHeaders
       });
-      
+
       const apiResponse = response.data;
       if (apiResponse.data?.token) {
         localStorage.setItem('token', apiResponse.data.token);
-        return apiResponse;
+        return apiResponse.data;
       } else {
         throw new Error('Verification failed');
       }
@@ -306,10 +315,10 @@ export function useAuth(): AuthComposable {
     register,
     sendRegisterOtp,
     sendLoginOtp,
-    verifyRegistration,
+    verifyRegistrationOtp,
     registerBiometrics,
     login,
-    verifyLogin,
+    verifyLoginOtp,
     verifyBiometrics
   };
 };

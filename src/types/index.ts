@@ -153,14 +153,15 @@ export interface Passkey {
 }
 
 export interface LoginResponse {
-  message: string;
-  success: boolean;
+  sessionToken: string;
+  email: string;
+  isNewUser: boolean;
 }
 
 export interface RegisterResponse {
-  message: string;
-  user: User;
-  token: string;
+  sessionToken: string;
+  email: string;
+  isNewUser: boolean;
 }
 
 export interface VerifyLoginResponse {
@@ -169,14 +170,11 @@ export interface VerifyLoginResponse {
 }
 
 export interface BiometricSetupResponse {
-  success: boolean;
   token: string;
   user: User;
-  message: string;
 }
 
 export interface BiometricVerifyResponse {
-  success: boolean;
   token: string;
   user: User;
   isNewUser?: boolean;
@@ -197,14 +195,14 @@ export interface CompleteTwoFAResponse {
 
 // Update AuthComposable to use typed responses
 export interface AuthComposable {
-  login: (userData: LoginData) => Promise<ApiResponse<LoginResponse>>;
-  verifyLogin: (userData: VerifyLogin) => Promise<ApiResponse<VerifyLoginResponse>>;
-  register: (userData: RegisterData) => Promise<ApiResponse<RegisterResponse>>;
-  sendLoginOtp: (email: string) => Promise<ApiResponse<{ otp: string }>>;
-  sendRegisterOtp: (email: string) => Promise<ApiResponse<void>>;
-  verifyRegistration: (email: string, otp: string) => Promise<ApiResponse<void>>;
-  registerBiometrics: (email: string, sessionToken?: string) => Promise<ApiResponse<BiometricSetupResponse>>;
-  verifyBiometrics: (email: string, sessionToken?: string) => Promise<ApiResponse<BiometricVerifyResponse>>;
+  login: (userData: LoginData) => Promise<LoginResponse | undefined>;
+  verifyLoginOtp: (userData: VerifyLogin) => Promise<VerifyLoginResponse | undefined>;
+  register: (userData: RegisterData) => Promise<RegisterResponse | undefined>;
+  sendLoginOtp: (email: string, sessionToken?: string) => Promise<{ otp: string } | undefined>;
+  sendRegisterOtp: (email: string) => Promise<void>;
+  verifyRegistrationOtp: (email: string, otp: string) => Promise<void>;
+  registerBiometrics: (email: string, sessionToken?: string) => Promise<BiometricSetupResponse | undefined>;
+  verifyBiometrics: (email: string, sessionToken?: string) => Promise<BiometricVerifyResponse | undefined>;
 }
 
 // Event types for plugin events

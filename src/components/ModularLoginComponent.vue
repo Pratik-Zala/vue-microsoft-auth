@@ -83,7 +83,7 @@ const email = ref('');
 const password = ref('');
 const credentialsForm = ref(null);
 
-const { login, sendLoginOtp, verifyBiometrics, verifyLogin } = useAuth();
+const { login, sendLoginOtp, verifyBiometrics, verifyLoginOtp } = useAuth();
 const { signIn: microsoftSignIn } = useMicrosoftAuth();
 
 const handleBackAction = () => {
@@ -102,13 +102,15 @@ const handleCredentialsSubmit = async (credentials: { email: string; password: s
   password.value = credentials.password;
 
   try {
-    const response = await login({
+    const data = await login({
       email:credentials.email,
       password: credentials.password
     });
 
-    if (response.data && response.data.success) {
-      loginStep.value = 'choice';
+    if (data) {
+      // Redirect to two-factor authentication with session info
+      const { sessionToken, email, isNewUser } = data;
+      router.push(`/auth/two-factor?sessionToken=${sessionToken}&email=${encodeURIComponent(email)}&isNewUser=${isNewUser}`);
     } else {  
       error.value = 'Invalid login credentials.';
       emit('error', error.value);
@@ -141,13 +143,13 @@ const selectVerificationMethod = async (method: 'email' | 'biometric') => {
       isLoading.value = true;
       error.value = '';
 
-      const response = await verifyBiometrics(email.value);
+      const data = await verifyBiometrics(email.value);
 
-      if (response.data && response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+      if (data && data.token) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
 
-        emit('success', response.data);
+        emit('success', data);
 
         if(props.autoRedirect) {  
           router.push(props.redirectPath);
@@ -174,16 +176,16 @@ const verifyOtpLogin = async (otp: string) => {
   isLoading.value = true;
   error.value = '';
   try {
-    const response = await verifyLogin({
+    const data = await verifyLoginOtp({
       email: email.value,
       otp: otp,
     });
 
-    if (response.data && response.data.token) {
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
+    if (data && data.token) {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
       
-      emit('success', response.data);
+      emit('success', data);
     } else {
       error.value = 'Login failed: No token received from server.';
       emit('error', error.value);
