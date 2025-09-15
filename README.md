@@ -22,6 +22,7 @@ npm install @twymai/vue-twymx
 **Requirements:**
 - Vue 3.0+
 - Vue Router 4.0+ (required for authentication components with routing)
+- Tailwind CSS 3.0+ (required for styling)
 
 ## Quick Start
 
@@ -71,7 +72,289 @@ app.mount('#app')
 
 **Note:** The `ApiClientPlugin` must be installed before the `MicrosoftAuth` plugin, as it provides the API base URL configuration.
 
-### 2. Use in Components
+### 2. Setup Tailwind CSS
+
+This package uses Tailwind CSS for styling. Choose the setup option that best fits your project:
+
+#### Option A: For Projects WITHOUT Tailwind CSS (Easiest)
+
+If your project doesn't use Tailwind CSS, simply import the pre-processed styles:
+
+```typescript
+// In your main.ts or main.js
+import '@twymai/vue-twymx/styles-processed.css'
+```
+
+This file contains all the necessary styles pre-compiled and ready to use. No additional configuration needed!
+
+#### Option B: For Projects WITH Tailwind CSS
+
+If your project already uses Tailwind CSS, you have two sub-options:
+
+**B1. Use Raw Styles (Recommended for Tailwind projects):**
+
+1. Import the raw styles in your main CSS file:
+```css
+/* In your main CSS file (e.g., src/style.css) */
+@import '@twymai/vue-twymx/styles.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+2. Update your `tailwind.config.js` to include the package's content:
+```javascript
+module.exports = {
+  content: [
+    "./index.html",
+    "./src/**/*.{vue,js,ts,jsx,tsx}",
+    "./node_modules/@twymai/vue-twymx/**/*.{vue,js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        indigo: {
+          50: '#eef2ff',
+          100: '#e0e7ff',
+          200: '#c7d2fe',
+          300: '#a5b4fc',
+          400: '#818cf8',
+          500: '#6366f1',
+          600: '#4f46e5',
+          700: '#4338ca',
+          800: '#3730a3',
+          900: '#312e81',
+        },
+      },
+    },
+  },
+  plugins: [],
+}
+```
+
+**B2. Extend Package Config (Alternative):**
+
+1. Update your `tailwind.config.js` to extend the package's configuration:
+```javascript
+const packageConfig = require('@twymai/vue-twymx/tailwind.config.js')
+
+module.exports = {
+  ...packageConfig,
+  content: [
+    ...packageConfig.content,
+    "./index.html",
+    "./src/**/*.{vue,js,ts,jsx,tsx}",
+  ],
+  theme: {
+    ...packageConfig.theme,
+    extend: {
+      ...packageConfig.theme.extend,
+      // Add your custom theme extensions
+    },
+  },
+}
+```
+
+2. Import the raw styles:
+```css
+@import '@twymai/vue-twymx/styles.css';
+```
+
+#### Complete Setup Examples
+
+**Example 1: Project WITHOUT Tailwind CSS (Simplest):**
+
+```bash
+# Create a new Vue project
+npm create vue@latest my-auth-app
+cd my-auth-app
+
+# Install the package
+npm install @twymai/vue-twymx
+```
+
+**src/main.ts:**
+```typescript
+import { createApp } from 'vue'
+import { createRouter, createWebHistory } from 'vue-router'
+import App from './App.vue'
+import MicrosoftAuth, { ApiClientPlugin, RouterPlugin } from '@twymai/vue-twymx'
+
+// Import pre-processed styles (no Tailwind setup needed!)
+import '@twymai/vue-twymx/styles-processed.css'
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    {
+      path: '/',
+      name: 'Home',
+      component: () => import('./views/Home.vue')
+    }
+  ]
+})
+
+const app = createApp(App)
+
+// Configure the plugins
+app.use(ApiClientPlugin, {
+  baseUrl: 'https://your-backend-api.com'
+})
+
+app.use(MicrosoftAuth, {
+  autoRefresh: true,
+  debug: process.env.NODE_ENV === 'development'
+})
+
+app.use(RouterPlugin, {
+  router: router
+})
+
+app.use(router)
+app.mount('#app')
+```
+
+**Example 2: Project WITH Existing Tailwind CSS:**
+
+```bash
+# Create a new Vue project
+npm create vue@latest my-auth-app
+cd my-auth-app
+
+# Install the package
+npm install @twymai/vue-twymx
+
+# Install Tailwind CSS (if not already installed)
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+```
+
+**tailwind.config.js:**
+```javascript
+module.exports = {
+  content: [
+    "./index.html",
+    "./src/**/*.{vue,js,ts,jsx,tsx}",
+    // IMPORTANT: Include the package's components
+    "./node_modules/@twymai/vue-twymx/**/*.{vue,js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        // IMPORTANT: Include indigo colors used by the package
+        indigo: {
+          50: '#eef2ff',
+          100: '#e0e7ff',
+          200: '#c7d2fe',
+          300: '#a5b4fc',
+          400: '#818cf8',
+          500: '#6366f1',
+          600: '#4f46e5',
+          700: '#4338ca',
+          800: '#3730a3',
+          900: '#312e81',
+        },
+      },
+    },
+  },
+  plugins: [],
+}
+```
+
+**src/style.css:**
+```css
+@import '@twymai/vue-twymx/styles.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Your custom styles here */
+```
+
+**src/main.ts:**
+```typescript
+import { createApp } from 'vue'
+import { createRouter, createWebHistory } from 'vue-router'
+import App from './App.vue'
+import MicrosoftAuth, { ApiClientPlugin, RouterPlugin } from '@twymai/vue-twymx'
+
+// Import your main CSS file (which includes the package styles)
+import './style.css'
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    {
+      path: '/',
+      name: 'Home',
+      component: () => import('./views/Home.vue')
+    }
+  ]
+})
+
+const app = createApp(App)
+
+// Configure the plugins
+app.use(ApiClientPlugin, {
+  baseUrl: 'https://your-backend-api.com'
+})
+
+app.use(MicrosoftAuth, {
+  autoRefresh: true,
+  debug: process.env.NODE_ENV === 'development'
+})
+
+app.use(RouterPlugin, {
+  router: router
+})
+
+app.use(router)
+app.mount('#app')
+```
+
+#### Option B: Manual Configuration
+
+If you prefer to configure Tailwind manually, ensure your `tailwind.config.js` includes:
+
+```javascript
+module.exports = {
+  content: [
+    "./index.html",
+    "./src/**/*.{vue,js,ts,jsx,tsx}",
+    "./node_modules/@twymai/vue-twymx/**/*.{vue,js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        indigo: {
+          50: '#eef2ff',
+          100: '#e0e7ff',
+          200: '#c7d2fe',
+          300: '#a5b4fc',
+          400: '#818cf8',
+          500: '#6366f1',
+          600: '#4f46e5',
+          700: '#4338ca',
+          800: '#3730a3',
+          900: '#312e81',
+        },
+      },
+    },
+  },
+  plugins: [],
+}
+```
+
+Then create your own CSS file with Tailwind directives:
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+### 3. Use in Components
 
 ```vue
 <template>
@@ -544,6 +827,83 @@ try {
   console.error(`Auth Error [${error.code}]:`, error.message)
   console.error('Details:', error.details)
 }
+```
+
+## Styling and Customization
+
+### Tailwind CSS Integration
+
+This package uses Tailwind CSS for styling and provides several ways to integrate with your project:
+
+#### CSS Classes Used
+
+The components use these main Tailwind CSS classes:
+- Layout: `flex`, `items-center`, `justify-center`, `min-h-screen`, `max-w-md`
+- Colors: `bg-gray-100`, `bg-white`, `bg-indigo-600`, `text-gray-900`, `text-white`
+- Spacing: `p-8`, `space-y-4`, `space-y-6`, `mt-1`, `px-3`, `py-2`
+- Border & Effects: `rounded-md`, `shadow-md`, `border-gray-300`, `focus:ring-indigo-500`
+
+#### Customizing Styles
+
+You can customize the appearance by:
+
+1. **Overriding Tailwind classes** in your own CSS:
+```css
+/* Override component styles */
+.auth-container .bg-indigo-600 {
+  @apply bg-blue-600; /* Use blue instead of indigo */
+}
+```
+
+2. **Using CSS custom properties** (if you modify the components):
+```css
+:root {
+  --auth-primary-color: theme('colors.blue.600');
+  --auth-secondary-color: theme('colors.gray.100');
+}
+```
+
+3. **Extending the Tailwind theme** in your config:
+```javascript
+// tailwind.config.js
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        'auth-primary': '#your-color',
+        'auth-secondary': '#your-color',
+      }
+    }
+  }
+}
+```
+
+#### Troubleshooting Styles
+
+**Problem: Components appear unstyled or `bg-indigo-600` classes don't work**
+- **For projects WITHOUT Tailwind**: Use `@twymai/vue-twymx/styles-processed.css` instead of `styles.css`
+- **For projects WITH Tailwind**: Ensure your `tailwind.config.js` includes:
+  - The package's content path: `"./node_modules/@twymai/vue-twymx/**/*.{vue,js,ts,jsx,tsx}"`
+  - The indigo color palette in your theme.extend.colors
+  - Import the raw styles (`@import '@twymai/vue-twymx/styles.css'`) in your CSS file
+
+**Problem: Specific Tailwind classes like `bg-indigo-600` don't work**
+- Solution: Use the pre-processed CSS file: `import '@twymai/vue-twymx/styles-processed.css'`
+- This file contains all the necessary styles pre-compiled and ready to use
+
+**Problem: Build optimization removes styles**
+- Solution: Add the package path to your Tailwind content configuration
+- Solution: Use the pre-processed CSS file which doesn't require Tailwind processing
+
+**Problem: Conflicting styles with existing Tailwind setup**
+- Solution: Import the package styles first, then your custom styles
+- Solution: Use CSS specificity or `!important` if needed for overrides
+
+**Quick Fix for Any Styling Issues:**
+If you're having any styling problems, try using the pre-processed CSS file as a quick solution:
+```typescript
+// Replace any existing style imports with this:
+import '@twymai/vue-twymx/styles-processed.css'
 ```
 
 ## Development

@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles for the vue-twymx components */
+.auth-container {
+  @apply font-sans;
+}
+
+/* Ensure proper styling for form elements */
+.auth-container input[type="email"],
+.auth-container input[type="password"],
+.auth-container input[type="text"] {
+  @apply appearance-none;
+}
+
+/* Button focus styles */
+.auth-container button:focus {
+  @apply outline-none;
+}
+
+/* Loading state styles */
+.auth-container button:disabled {
+  @apply cursor-not-allowed;
+}

@@ -46,4 +46,11 @@ export {
 export { ApiClientPlugin, RouterPlugin };
 
 // Version
-export const version = '1.0.0';
+export const version = '2.1.0';
+
+// CSS import paths for consuming applications
+export const stylesPath = '@twymai/vue-twymx/styles.css'; // Raw styles with Tailwind directives
+export const stylesProcessedPath = '@twymai/vue-twymx/styles-processed.css'; // Pre-processed styles
+
+// Tailwind config path for consuming applications
+export const tailwindConfigPath = '@twymai/vue-twymx/tailwind.config.js';

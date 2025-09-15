@@ -5,6 +5,9 @@ import { resolve } from 'path'
 
 export default defineConfig({
   plugins: [vue()],
+  css: {
+    postcss: './postcss.config.js',
+  },
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
@@ -20,6 +23,9 @@ export default defineConfig({
           axios: 'axios'
         },
         assetFileNames: (assetInfo) => {
+          if (assetInfo.name === 'styles.css') {
+            return 'styles.css'
+          }
           if (assetInfo.name?.endsWith('.vue')) {
             return 'components/[name].[ext]'
           }
