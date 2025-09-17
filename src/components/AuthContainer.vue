@@ -4,36 +4,36 @@
     <div v-if="authFlow === 'login'">
 
       <slot name="login-header">
-        <h2 class="text-2xl font-bold text-center text-gray-900">Sign In</h2>
+        <h2 class="twymx-text-2xl twymx-font-bold twymx-text-center twymx-text-gray-900">Sign In</h2>
       </slot>
       
       <!-- Login Form -->
       <div v-if="loginStep === 'form'">
         <slot name="login-form" :email="email" :password="password" :isLoading="isLoading" :error="error" :handleLogin="handleLogin">
-          <form @submit.prevent="handleLogin" class="space-y-4">
+          <form @submit.prevent="handleLogin" class="twymx-space-y-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700">Email</label>
+              <label class="twymx-block twymx-text-sm twymx-font-medium twymx-text-gray-700">Email</label>
               <input 
                 v-model="email" 
                 type="email" 
                 required
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                class="twymx-mt-1 twymx-block twymx-w-full twymx-px-3 twymx-py-2 border twymx-border-gray-300 twymx-rounded-md twymx-shadow-sm focus:twymx-outline-none focus:twymx-ring-indigo-500 focus:twymx-border-indigo-500"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700">Password</label>
+              <label class="twymx-block twymx-text-sm twymx-font-medium twymx-text-gray-700">Password</label>
               <input 
                 v-model="password" 
                 type="password" 
                 required
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                class="twymx-mt-1 twymx-block twymx-w-full twymx-px-3 twymx-py-2 border twymx-border-gray-300 twymx-rounded-md twymx-shadow-sm focus:twymx-outline-none focus:twymx-ring-indigo-500 focus:twymx-border-indigo-500"
               />
             </div>
-            <div v-if="error" class="text-red-600 text-sm">{{ error }}</div>
+            <div v-if="error" class="twymx-text-red-600 twymx-text-sm">{{ error }}</div>
             <button 
               type="submit" 
               :disabled="isLoading"
-              class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+              class="twymx-w-full twymx-flex twymx-justify-center twymx-py-2 twymx-px-4 border twymx-border-transparent twymx-rounded-md twymx-shadow-sm twymx-text-sm twymx-font-medium twymx-text-white twymx-bg-indigo-600 hover:twymx-bg-indigo-700 focus:twymx-outline-none focus:twymx-ring-2 focus:twymx-ring-offset-2 focus:twymx-ring-indigo-500 disabled:twymx-opacity-50"
             >
               {{ isLoading ? 'Signing in...' : 'Sign In' }}
             </button>
@@ -44,15 +44,15 @@
       <!-- Verification Choice -->
       <div v-if="loginStep === 'choice'">
         <slot name="verification-choice" :selectMethod="selectVerificationMethod" :isLoading="isLoading">
-          <h2 class="text-2xl font-bold text-center text-gray-900">Choose Verification Method</h2>
-          <p class="text-center text-sm text-gray-600 mt-2">How would you like to verify it's you?</p>
-          <div class="mt-6 space-y-4">
+          <h2 class="twymx-text-2xl twymx-font-bold twymx-text-center twymx-text-gray-900">Choose Verification Method</h2>
+          <p class="twymx-text-center twymx-text-sm twymx-text-gray-600 twymx-mt-2">How would you like to verify it's you?</p>
+          <div class="twymx-mt-6 twymx-space-y-4">
             <button @click="selectVerificationMethod('email')"
-              class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+              class="twymx-w-full twymx-flex twymx-justify-center twymx-py-2 twymx-px-4 border twymx-border-transparent twymx-rounded-md twymx-shadow-sm twymx-text-sm twymx-font-medium twymx-text-white twymx-bg-indigo-600 hover:twymx-bg-indigo-700 focus:twymx-outline-none focus:twymx-ring-2 focus:twymx-ring-offset-2 focus:twymx-ring-indigo-500">
               Verify with Email OTP
             </button>
             <button @click="selectVerificationMethod('biometric')"
-              class="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+              class="twymx-w-full twymx-flex twymx-justify-center twymx-py-2 twymx-px-4 border twymx-border-gray-300 twymx-rounded-md twymx-shadow-sm twymx-text-sm twymx-font-medium twymx-text-gray-700 twymx-bg-white hover:twymx-bg-gray-50">
               Verify with Biometrics
             </button>
           </div>
@@ -62,23 +62,23 @@
       <!-- OTP Verification -->
       <div v-if="loginStep === 'otp'">
         <slot name="otp-verification" :email="email" :otp="otp" :isLoading="isLoading" :error="error" :handleVerifyOtp="handleVerifyOtp">
-          <form @submit.prevent="handleVerifyOtp" class="space-y-4">
-            <h2 class="text-2xl font-bold text-center text-gray-900">Enter OTP</h2>
-            <p class="text-center text-sm text-gray-600">We've sent a code to {{ email }}</p>
+          <form @submit.prevent="handleVerifyOtp" class="twymx-space-y-4">
+            <h2 class="twymx-text-2xl twymx-font-bold twymx-text-center twymx-text-gray-900">Enter OTP</h2>
+            <p class="twymx-text-center twymx-text-sm twymx-text-gray-600">We've sent a code to {{ email }}</p>
             <div>
               <input 
                 v-model="otp" 
                 type="text" 
                 placeholder="Enter OTP"
                 required
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                class="twymx-mt-1 twymx-block twymx-w-full twymx-px-3 twymx-py-2 border twymx-border-gray-300 twymx-rounded-md twymx-shadow-sm focus:twymx-outline-none focus:twymx-ring-indigo-500 focus:twymx-border-indigo-500"
               />
             </div>
-            <div v-if="error" class="text-red-600 text-sm">{{ error }}</div>
+            <div v-if="error" class="twymx-text-red-600 twymx-text-sm">{{ error }}</div>
             <button 
               type="submit" 
               :disabled="isLoading"
-              class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+              class="twymx-w-full twymx-flex twymx-justify-center twymx-py-2 twymx-px-4 border twymx-border-transparent twymx-rounded-md twymx-shadow-sm twymx-text-sm twymx-font-medium twymx-text-white twymx-bg-indigo-600 hover:twymx-bg-indigo-700 focus:twymx-outline-none focus:twymx-ring-2 focus:twymx-ring-offset-2 focus:twymx-ring-indigo-500 disabled:twymx-opacity-50"
             >
               {{ isLoading ? 'Verifying...' : 'Verify OTP' }}
             </button>
@@ -90,45 +90,45 @@
     <!-- Registration Flow -->
     <div v-if="authFlow === 'register'">
       <slot name="register-header">
-        <h2 class="text-2xl font-bold text-center text-gray-900">Create Account</h2>
+        <h2 class="twymx-text-2xl twymx-font-bold twymx-text-center twymx-text-gray-900">Create Account</h2>
       </slot>
 
       <!-- Registration Form -->
       <div v-if="registrationStep === 'details'">
         <slot name="register-form" :name="name" :email="email" :password="password" :isLoading="isLoading" :error="error" :handleRegister="handleRegister">
-          <form @submit.prevent="handleRegister" class="space-y-4">
+          <form @submit.prevent="handleRegister" class="twymx-space-y-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700">Name</label>
+              <label class="twymx-block twymx-text-sm twymx-font-medium twymx-text-gray-700">Name</label>
               <input 
                 v-model="name" 
                 type="text" 
                 required
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                class="twymx-mt-1 twymx-block twymx-w-full twymx-px-3 twymx-py-2 border twymx-border-gray-300 twymx-rounded-md twymx-shadow-sm focus:twymx-outline-none focus:twymx-ring-indigo-500 focus:twymx-border-indigo-500"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700">Email</label>
+              <label class="twymx-block twymx-text-sm twymx-font-medium twymx-text-gray-700">Email</label>
               <input 
                 v-model="email" 
                 type="email" 
                 required
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                class="twymx-mt-1 twymx-block twymx-w-full twymx-px-3 twymx-py-2 border twymx-border-gray-300 twymx-rounded-md twymx-shadow-sm focus:twymx-outline-none focus:twymx-ring-indigo-500 focus:twymx-border-indigo-500"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700">Password</label>
+              <label class="twymx-block twymx-text-sm twymx-font-medium twymx-text-gray-700">Password</label>
               <input 
                 v-model="password" 
                 type="password" 
                 required
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                class="twymx-mt-1 twymx-block twymx-w-full twymx-px-3 twymx-py-2 border twymx-border-gray-300 twymx-rounded-md twymx-shadow-sm focus:twymx-outline-none focus:twymx-ring-indigo-500 focus:twymx-border-indigo-500"
               />
             </div>
-            <div v-if="error" class="text-red-600 text-sm">{{ error }}</div>
+            <div v-if="error" class="twymx-text-red-600 twymx-text-sm">{{ error }}</div>
             <button 
               type="submit" 
               :disabled="isLoading"
-              class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+              class="twymx-w-full twymx-flex twymx-justify-center twymx-py-2 twymx-px-4 border twymx-border-transparent twymx-rounded-md twymx-shadow-sm twymx-text-sm twymx-font-medium twymx-text-white twymx-bg-indigo-600 hover:twymx-bg-indigo-700 focus:twymx-outline-none focus:twymx-ring-2 focus:twymx-ring-offset-2 focus:twymx-ring-indigo-500 disabled:twymx-opacity-50"
             >
               {{ isLoading ? 'Creating account...' : 'Create Account' }}
             </button>
@@ -139,23 +139,23 @@
       <!-- OTP Verification for Registration -->
       <div v-if="registrationStep === 'otp'">
         <slot name="register-otp" :email="email" :otp="otp" :isLoading="isLoading" :error="error" :handleVerifyRegistration="handleVerifyRegistration">
-          <form @submit.prevent="handleVerifyRegistration" class="space-y-4">
-            <h2 class="text-2xl font-bold text-center text-gray-900">Verify Email</h2>
-            <p class="text-center text-sm text-gray-600">We've sent a code to {{ email }}</p>
+          <form @submit.prevent="handleVerifyRegistration" class="twymx-space-y-4">
+            <h2 class="twymx-text-2xl twymx-font-bold twymx-text-center twymx-text-gray-900">Verify Email</h2>
+            <p class="twymx-text-center twymx-text-sm twymx-text-gray-600">We've sent a code to {{ email }}</p>
             <div>
               <input 
                 v-model="otp" 
                 type="text" 
                 placeholder="Enter OTP"
                 required
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                class="twymx-mt-1 twymx-block twymx-w-full twymx-px-3 twymx-py-2 border twymx-border-gray-300 twymx-rounded-md twymx-shadow-sm focus:twymx-outline-none focus:twymx-ring-indigo-500 focus:twymx-border-indigo-500"
               />
             </div>
-            <div v-if="error" class="text-red-600 text-sm">{{ error }}</div>
+            <div v-if="error" class="twymx-text-red-600 twymx-text-sm">{{ error }}</div>
             <button 
               type="submit" 
               :disabled="isLoading"
-              class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+              class="twymx-w-full twymx-flex twymx-justify-center twymx-py-2 twymx-px-4 border twymx-border-transparent twymx-rounded-md twymx-shadow-sm twymx-text-sm twymx-font-medium twymx-text-white twymx-bg-indigo-600 hover:twymx-bg-indigo-700 focus:twymx-outline-none focus:twymx-ring-2 focus:twymx-ring-offset-2 focus:twymx-ring-indigo-500 disabled:twymx-opacity-50"
             >
               {{ isLoading ? 'Verifying...' : 'Verify Email' }}
             </button>
@@ -166,17 +166,17 @@
       <!-- Biometric Setup -->
       <div v-if="registrationStep === 'biometric'">
         <slot name="biometric-setup" :email="email" :isLoading="isLoading" :error="error" :handleSetupBiometrics="handleSetupBiometrics">
-          <div class="text-center">
-            <h2 class="text-2xl font-bold text-center text-gray-900">Set up Biometric Login</h2>
-            <p class="text-center text-sm text-gray-600 mt-2">
+          <div class="twymx-text-center">
+            <h2 class="twymx-text-2xl twymx-font-bold twymx-text-center twymx-text-gray-900">Set up Biometric Login</h2>
+            <p class="twymx-text-center twymx-text-sm twymx-text-gray-600 twymx-mt-2">
               Secure your account and log in faster with biometrics.
             </p>
-            <div class="mt-8 space-y-4">
+            <div class="twymx-mt-8 twymx-space-y-4">
               <button @click="handleSetupBiometrics" :disabled="isLoading"
-                class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50">
+                class="twymx-w-full twymx-flex twymx-justify-center twymx-py-2 twymx-px-4 border twymx-border-transparent twymx-rounded-md twymx-shadow-sm twymx-text-sm twymx-font-medium twymx-text-white twymx-bg-indigo-600 hover:twymx-bg-indigo-700 focus:twymx-outline-none focus:twymx-ring-2 focus:twymx-ring-offset-2 focus:twymx-ring-indigo-500 disabled:twymx-opacity-50">
                 {{ isLoading ? 'Setting up...' : 'Enable Biometrics' }}
               </button>
-              <div v-if="error" class="text-red-600 text-sm">{{ error }}</div>
+              <div v-if="error" class="twymx-text-red-600 twymx-text-sm">{{ error }}</div>
             </div>
           </div>
         </slot>
@@ -213,7 +213,7 @@ const {
   register, 
   sendRegisterOtp,
   sendLoginOtp, 
-  verifyRegistration, 
+  verifyRegistrationOtp, 
   registerBiometrics, 
   verifyBiometrics 
 } = useAuth();
@@ -255,8 +255,8 @@ const selectVerificationMethod = async (method: 'email' | 'biometric') => {
     } else if (method === 'biometric') {
       isLoading.value = true;
       const response = await verifyBiometrics(email.value);
-      if (response.data && response.data.token) {
-        emit('success', response.data);
+      if (response && response.token) {
+        emit('success', response);
       } else {
         error.value = 'Verification failed';
       }
@@ -316,7 +316,7 @@ const handleVerifyRegistration = async () => {
   isLoading.value = true;
   error.value = '';
   try {
-    await verifyRegistration(email.value, otp.value);
+    await verifyRegistrationOtp(email.value, otp.value);
     await register({ name: name.value, email: email.value, password: password.value });
     registrationStep.value = 'biometric';
     emit('step-change', 'biometric');

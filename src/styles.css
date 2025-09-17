@@ -4,22 +4,22 @@
 
 /* Custom styles for the vue-twymx components */
 .auth-container {
-  @apply font-sans;
+  @apply twymx-font-sans;
 }
 
 /* Ensure proper styling for form elements */
 .auth-container input[type="email"],
 .auth-container input[type="password"],
 .auth-container input[type="text"] {
-  @apply appearance-none;
+  @apply twymx-appearance-none;
 }
 
 /* Button focus styles */
 .auth-container button:focus {
-  @apply outline-none;
+  @apply twymx-outline-none;
 }
 
 /* Loading state styles */
 .auth-container button:disabled {
-  @apply cursor-not-allowed;
+  @apply twymx-cursor-not-allowed;
 }

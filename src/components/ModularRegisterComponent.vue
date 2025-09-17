@@ -1,6 +1,6 @@
 <template>
-  <div class="flex items-center justify-center min-h-screen bg-gray-100">
-    <div class="relative w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
+  <div class="twymx-flex twymx-items-center twymx-justify-center twymx-min-h-screen twymx-bg-gray-100">
+    <div class="twymx-relative twymx-w-full twymx-max-w-md twymx-p-8 twymx-space-y-6 twymx-bg-white twymx-rounded-lg twymx-shadow-md">
       <!-- Back Button -->
       <BackButton v-if="registrationStep === 'otp'" @back="goBackToDetails" />
 
@@ -13,12 +13,12 @@
         @verify="handleVerificationRegistration" />
 
       <!-- Error Message -->
-      <p v-if="error" class="text-sm text-center text-red-500">{{ error }}</p>
+      <p v-if="error" class="twymx-text-sm twymx-text-center twymx-text-red-500">{{ error }}</p>
 
-      <p class="text-sm text-center">
+      <p class="twymx-text-sm twymx-text-center">
       <!-- Login Link -->
         Already have an account?
-        <a href="/login" @click="$emit('login')" class="font-medium text-indigo-600 hover:text-indigo-500">
+        <a href="/login" @click="$emit('login')" class="twymx-font-medium twymx-text-indigo-600 hover:twymx-text-indigo-500">
           Login
         </a>
       </p>
