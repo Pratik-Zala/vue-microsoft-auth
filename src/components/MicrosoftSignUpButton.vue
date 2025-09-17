@@ -1,7 +1,7 @@
 <template>
   <button @click="handleSignUp" :disabled="isLoading"
-    class="twymx-w-full twymx-flex twymx-items-center twymx-justify-center twymx-py-2 twymx-px-4 twymx-border twymx-border-gray-300 twymx-rounded-md twymx-shadow-sm twymx-text-sm twymx-font-medium twymx-text-gray-700 twymx-bg-white hover:twymx-bg-gray-50 disabled:twymx-opacity-50">
-    <img class="twymx-h-5 twymx-w-5 twymx-mr-2"
+    class="twymx-scope w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50">
+    <img class="h-5 w-5 mr-2"
       src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Microsoft_logo.svg/240px-Microsoft_logo.svg.png"
       alt="Microsoft logo" />
     <span><slot>Sign up with Microsoft</slot></span>

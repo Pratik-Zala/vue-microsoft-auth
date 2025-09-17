@@ -22,11 +22,26 @@ async function buildCSS() {
     to: path.join(__dirname, 'dist/styles-processed.css')
   })
   
+  // Scope all utility classes under .twymx-scope to avoid conflicts
+  let scopedCSS = result.css
+  
+  // Add scope prefix to all utility classes (but not CSS variables or @layer rules)
+  scopedCSS = scopedCSS.replace(
+    /^(\s*)(\.(?!twymx-scope)[a-zA-Z0-9_-]+(?:[a-zA-Z0-9_:-]*)?)\s*{/gm,
+    '$1.twymx-scope $2 {'
+  )
+  
+  // Also handle pseudo-classes and responsive variants
+  scopedCSS = scopedCSS.replace(
+    /^(\s*)(\.(?!twymx-scope)[a-zA-Z0-9_-]+(?:\:[a-zA-Z0-9_-]+)*(?:\\[a-zA-Z0-9_:-]*)*)\s*{/gm,
+    '$1.twymx-scope $2 {'
+  )
+  
   // Write the processed CSS
   const outputPath = path.join(__dirname, 'dist/styles-processed.css')
-  fs.writeFileSync(outputPath, result.css)
+  fs.writeFileSync(outputPath, scopedCSS)
   
-  console.log('✓ Built processed CSS file:', outputPath)
+  console.log('✓ Built scoped CSS file:', outputPath)
 }
 
 buildCSS().catch(console.error)

@@ -1,25 +1,24 @@
-@tailwind base;
-@tailwind components;
+/* Only include Tailwind utilities, not base styles to avoid conflicts */
 @tailwind utilities;
 
 /* Custom styles for the vue-twymx components */
 .auth-container {
-  @apply twymx-font-sans;
+  @apply font-sans;
 }
 
 /* Ensure proper styling for form elements */
 .auth-container input[type="email"],
 .auth-container input[type="password"],
 .auth-container input[type="text"] {
-  @apply twymx-appearance-none;
+  @apply appearance-none;
 }
 
 /* Button focus styles */
 .auth-container button:focus {
-  @apply twymx-outline-none;
+  @apply outline-none;
 }
 
 /* Loading state styles */
 .auth-container button:disabled {
-  @apply twymx-cursor-not-allowed;
+  @apply cursor-not-allowed;
 }

@@ -1,27 +1,27 @@
 <template>
-  <div class="twymx-w-full flex twymx-flex-col twymx-items-center gap-3">
+  <div class="twymx-scope w-full flex flex-col items-center gap-3">
 
     
     <!-- Helper / Info Text -->
-    <p class="twymx-text-sm twymx-text-gray-600 twymx-text-center">
-      Enable biometrics for <span class="twymx-font-medium">faster</span> and <span class="twymx-font-medium">more secure</span> logins.
+    <p class="text-sm text-gray-600 text-center">
+      Enable biometrics for <span class="font-medium">faster</span> and <span class="font-medium">more secure</span> logins.
     </p>
 
     <!-- Biometrics Button -->
     <button
       @click="handleRegisterBiometrics"
       :disabled="isLoading"
-      class="twymx-relative twymx-w-full twymx-flex twymx-items-center twymx-justify-center twymx-gap-2 twymx-py-2.5 twymx-px-4
-             rounded-xl twymx-font-medium twymx-text-white twymx-bg-indigo-600
-             twymx-shadow-md transition-all duration-200
-             hover:twymx-bg-indigo-700 focus:twymx-outline-none focus:twymx-ring-2
-             focus:twymx-ring-offset-2 focus:twymx-ring-indigo-500
-             disabled:twymx-opacity-50 disabled:twymx-cursor-not-allowed"
+      class="relative w-full flex items-center justify-center gap-2 py-2.5 px-4
+             rounded-xl font-medium text-white bg-indigo-600
+             shadow-md transition-all duration-200
+             hover:bg-indigo-700 focus:outline-none focus:ring-2
+             focus:ring-offset-2 focus:ring-indigo-500
+             disabled:opacity-50 disabled:cursor-not-allowed"
     >
       <!-- Loading Spinner -->
       <svg
         v-if="isLoading"
-        class="animate-spin twymx-h-5 twymx-w-5 twymx-text-white"
+        class="animate-spin h-5 w-5 text-white"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
@@ -38,7 +38,7 @@
     </button>
 
     <!-- Error Message -->
-    <p v-if="error" class="twymx-text-sm twymx-text-center twymx-text-red-500">
+    <p v-if="error" class="text-sm text-center text-red-500">
       {{ error }}
     </p>
   </div>

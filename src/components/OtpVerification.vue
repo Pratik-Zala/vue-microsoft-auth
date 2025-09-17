@@ -1,28 +1,28 @@
 
 <template>
-  <div>
-    <h2 class="twymx-text-2xl twymx-font-bold twymx-text-center twymx-text-gray-900">Enter OTP</h2>
-    <p class="twymx-text-center twymx-text-sm twymx-text-gray-600 twymx-mt-2">
+  <div class="twymx-scope">
+    <h2 class="text-2xl font-bold text-center text-gray-900">Enter OTP</h2>
+    <p class="text-center text-sm text-gray-600 mt-2">
       An OTP has been sent to {{ email }}.
     </p>
-    <form @submit.prevent="$emit('verify', otp)" class="twymx-mt-8 twymx-space-y-6">
+    <form @submit.prevent="$emit('verify', otp)" class="mt-8 space-y-6">
       <div>
-        <label for="otp" class="twymx-block twymx-text-sm twymx-font-medium twymx-text-gray-700">One-Time Password</label>
-        <div class="twymx-mt-1">
+        <label for="otp" class="block text-sm font-medium text-gray-700">One-Time Password</label>
+        <div class="mt-1">
           <input 
             type="text" 
             id="otp" 
             v-model="otp" 
             required
-            class="twymx-w-full twymx-px-3 twymx-py-2 border twymx-border-gray-300 twymx-rounded-md twymx-shadow-sm twymx-placeholder-gray-400 focus:twymx-outline-none focus:twymx-ring-indigo-500 focus:twymx-border-indigo-500 sm:twymx-text-sm"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           >
         </div>
       </div>
-      <div class="twymx-space-y-4">
+      <div class="space-y-4">
         <button 
           type="submit" 
           :disabled="isLoading"
-          class="twymx-w-full twymx-flex twymx-justify-center twymx-py-2 twymx-px-4 border twymx-border-transparent twymx-rounded-md twymx-shadow-sm twymx-text-sm twymx-font-medium twymx-text-white twymx-bg-indigo-600 hover:twymx-bg-indigo-700 focus:twymx-outline-none focus:twymx-ring-2 focus:twymx-ring-offset-2 focus:twymx-ring-indigo-500 disabled:twymx-opacity-50"
+          class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
         >
           {{ isLoading ? 'Verifying...' : 'Verify' }}
         </button>
